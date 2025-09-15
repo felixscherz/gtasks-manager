@@ -3,6 +3,7 @@ from pathlib import Path
 HOME_DIR = Path.home()
 CONFIG_DIR = HOME_DIR / ".config" / "gtasks-manager"
 TOKEN_FILE = CONFIG_DIR / "token.json"
+TASK_CACHE_FILE = CONFIG_DIR / "task_cache.json"
 
 SCOPES = ['https://www.googleapis.com/auth/tasks']
 

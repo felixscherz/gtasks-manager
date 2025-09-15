@@ -4,17 +4,22 @@ from typing import Optional
 
 from .tasks import TasksManager
 from .auth import clear_credentials
+from .task_cache import TaskCache
 
 
-def format_task(task):
+def format_task(task, index: Optional[int] = None):
     title = task.get('title', 'Untitled')
     status = task.get('status', 'needsAction')
     due = task.get('due')
     notes = task.get('notes', '')
+    task_id = task.get('id', '')
     
     status_symbol = '✓' if status == 'completed' else '○'
     
-    result = f"{status_symbol} {title}"
+    if index is not None:
+        result = f"{index}. {status_symbol} {title} (ID: {task_id})"
+    else:
+        result = f"{status_symbol} {title} (ID: {task_id})"
     
     if due:
         try:
@@ -27,6 +32,18 @@ def format_task(task):
         result += f"\n   Notes: {notes}"
     
     return result
+
+
+def resolve_task_reference(reference: str, show_completed: bool = False) -> Optional[str]:
+    cache = TaskCache()
+    task_id = cache.get_task_id(reference, show_completed)
+    
+    if not task_id:
+        click.echo(f"Task not found: {reference}")
+        click.echo("Run 'gtasks list' to see available tasks with their numbers and IDs.")
+        return None
+    
+    return task_id
 
 
 @click.group()
@@ -75,17 +92,24 @@ def list(completed: bool):
             click.echo("No tasks found.")
             return
         
-        for task in tasks:
-            click.echo(format_task(task))
+        cache = TaskCache()
+        cache.store_tasks(tasks, completed)
+        
+        for i, task in enumerate(tasks, 1):
+            click.echo(format_task(task, index=i))
     except Exception as e:
         click.echo(f"Error: {e}")
 
 
 @main.command()
-@click.argument('task_id')
-def complete(task_id: str):
-    """Mark a task as completed."""
+@click.argument('task_reference')
+def complete(task_reference: str):
+    """Mark a task as completed. Use task number (from list) or task ID."""
     try:
+        task_id = resolve_task_reference(task_reference)
+        if not task_id:
+            return
+        
         manager = TasksManager()
         if manager.complete_task(task_id):
             click.echo("Task marked as completed.")
@@ -96,10 +120,14 @@ def complete(task_id: str):
 
 
 @main.command()
-@click.argument('task_id')
-def delete(task_id: str):
-    """Delete a task."""
+@click.argument('task_reference')
+def delete(task_reference: str):
+    """Delete a task. Use task number (from list) or task ID."""
     try:
+        task_id = resolve_task_reference(task_reference)
+        if not task_id:
+            return
+        
         manager = TasksManager()
         if manager.delete_task(task_id):
             click.echo("Task deleted.")

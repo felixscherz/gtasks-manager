@@ -57,8 +57,16 @@ gtasks list                # Show active tasks
 gtasks list --completed    # Show all tasks including completed
 
 # Manage tasks
-gtasks complete <task_id>  # Mark task as completed
-gtasks delete <task_id>    # Delete a task
+```bash
+# List tasks (shows numbered index and task ID)
+gtasks list                # Show active tasks
+gtasks list --completed    # Show all tasks including completed
+
+# Complete/delete tasks using either number or ID
+gtasks complete 1          # Complete task #1 from list
+gtasks complete abc123def  # Complete by task ID
+gtasks delete 2            # Delete task #2 from list  
+gtasks delete xyz789uvw    # Delete by task ID
 
 # View task lists
 gtasks lists               # Show all your Google task lists
@@ -95,11 +103,15 @@ gtasks list
 # List all tasks including completed ones
 gtasks list --completed
 
-# Complete a task (you'll get the task ID from gtasks list)
-gtasks complete abc123def456
+# Complete a task (you'll get the task number from gtasks list)
+gtasks complete 1
 
-# Delete a task
-gtasks delete abc123def456
+# Delete a task using task number
+gtasks delete 2
+
+# Or use the full task ID if you prefer
+gtasks complete abc123def456
+gtasks delete xyz789uvw012
 
 # View all your task lists
 gtasks lists
