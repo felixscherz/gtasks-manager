@@ -4,13 +4,16 @@ This document provides coding guidelines and context for AI coding agents workin
 
 ## Project Overview
 
-A Python CLI tool for managing Google Tasks from the terminal. Built with Click framework, using Google Tasks API v1 with OAuth2 authentication.
+A Python application for managing Google Tasks from the terminal with dual interfaces: CLI for quick commands and TUI for visual task management. Built with Click (CLI), Textual (TUI), and Google Tasks API v1 with OAuth2 authentication.
 
 **Tech Stack:**
 - Python 3.11+
-- Click (CLI framework)
-- Google API Python Client
-- Google Auth libraries
+- Click 8.0+ (CLI framework)
+- Textual 0.47+ (TUI framework)
+- Google API Python Client 2.0+
+- Google Auth libraries (OAuth2)
+- Pydantic 2.0+ (Data validation)
+- pytest + pytest-asyncio (Testing)
 - Hatchling (build backend)
 
 ## Build, Test, and Run Commands
@@ -258,6 +261,44 @@ Use `resolve_task_reference()` helper for this translation.
 - Status values: `"needsAction"`, `"completed"`
 - Always use `tasklist` parameter in API calls
 
+### Building Textual TUI Components
+1. Use `reactive()` attributes for auto-updating UI state
+2. Implement `compose()` method for widget layout
+3. Handle events with `on_<event>` methods (e.g., `on_key`, `on_button_pressed`)
+4. Use `@work` decorator for async background operations (API calls)
+5. Create custom `Message` classes for widget communication
+6. Test with `app.run_test()` and Pilot API for simulating user input
+
+**Example Textual Widget**:
+```python
+from textual.reactive import reactive
+from textual.widgets import Static
+from textual import work
+
+class TaskListWidget(Static):
+    tasks = reactive(list)  # Auto-updates UI
+    
+    def compose(self):
+        yield TaskList(self.tasks)
+    
+    def watch_tasks(self, old, new):
+        """Called when tasks change."""
+        self.refresh()
+    
+    @work
+    async def load_tasks(self):
+        """Background API call."""
+        self.tasks = await api.fetch_tasks()
+```
+
+**Key Patterns**:
+- Reactive attributes: `tasks = reactive(list)` + `watch_tasks()` method
+- Async workers: `@work` decorator for non-blocking operations
+- Message passing: `self.post_message(TaskSelected(task_id))`
+- Testing: `async with app.run_test() as pilot: await pilot.press("j")`
+
+**Reference**: See `docs/textual-framework-guide.md` for comprehensive patterns
+
 ## Dependencies
 
 Core dependencies (see `pyproject.toml`):
@@ -277,3 +318,9 @@ Python version: `>=3.11`
 - Task editing functionality
 - Recurring tasks support
 - Better error messages with troubleshooting
+
+## Active Technologies
+- Local filesystem (OAuth tokens in `~/.config/gtasks-manager/token.json`) (001-google-tasks-cli-tui)
+
+## Recent Changes
+- 001-google-tasks-cli-tui: Added Python 3.11+
