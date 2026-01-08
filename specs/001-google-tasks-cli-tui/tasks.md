@@ -4,12 +4,12 @@
 
 **Purpose**: Project initialization and basic structure required by all phases
 
-- [ ] T001 Initialize Python project and ensure `pyproject.toml` includes required dependencies: `click`, `textual`, `google-api-python-client`, `google-auth-oauthlib`, `pydantic`, `pytest`, `pytest-asyncio` (file: `pyproject.toml`)
-- [ ] T002 [P] Create package directories per plan: `src/gtasks_manager/core`, `src/gtasks_manager/adapters`, `src/gtasks_manager/cli`, `src/gtasks_manager/tui` (create `__init__.py` files) (paths: `src/gtasks_manager/`)
-- [ ] T003 [P] Reuse existing `src/gtasks_manager/config.py` and verify `CLIENT_CONFIG`, `SCOPES`, `CONFIG_DIR`, `TOKEN_FILE`, and `ensure_config_dir()` are present and importable (file: `src/gtasks_manager/config.py`)
-- [ ] T004 [P] Add pytest configuration and basic `tests/conftest.py` with fixtures for `event_loop`, `tmp_path`, and a `mock_api` fixture (file: `pytest.ini`, `tests/conftest.py`)
-- [ ] T005 [P] Add basic CI config placeholder (e.g., `.github/workflows/python.yml`) with job to run `pytest` (file: `.github/workflows/python.yml`)
-- [ ] T006 [P] Configure project formatting tools (recommended: `ruff`/`black`) and add minimal config files (`pyproject.toml` entries or config files) (file: `pyproject.toml`)
+- [X] T001 Initialize Python project and ensure `pyproject.toml` includes required dependencies: `click`, `textual`, `google-api-python-client`, `google-auth-oauthlib`, `pydantic`, `pytest`, `pytest-asyncio` (file: `pyproject.toml`)
+- [X] T002 [P] Create package directories per plan: `src/gtasks_manager/core`, `src/gtasks_manager/adapters`, `src/gtasks_manager/cli`, `src/gtasks_manager/tui` (create `__init__.py` files) (paths: `src/gtasks_manager/`)
+- [X] T003 [P] Reuse existing `src/gtasks_manager/config.py` and verify `CLIENT_CONFIG`, `SCOPES`, `CONFIG_DIR`, `TOKEN_FILE`, and `ensure_config_dir()` are present and importable (file: `src/gtasks_manager/config.py`)
+- [X] T004 [P] Add pytest configuration and basic `tests/conftest.py` with fixtures for `event_loop`, `tmp_path`, and a `mock_api` fixture (file: `pytest.ini`, `tests/conftest.py`)
+- [X] T005 [P] Add basic CI config placeholder (e.g., `.github/workflows/python.yml`) with job to run `pytest` (file: `.github/workflows/python.yml`)
+- [X] T006 [P] Configure project formatting tools (recommended: `ruff`/`black`) and add minimal config files (`pyproject.toml` entries or config files) (file: `pyproject.toml`)
 
 ---
 
