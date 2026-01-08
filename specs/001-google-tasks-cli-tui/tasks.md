@@ -17,12 +17,12 @@
 
 **Purpose**: Core infrastructure that MUST be complete before any user story implementation
 
-- [ ] T007 Implement core domain models in `src/gtasks_manager/core/models.py`: `Task`, `TaskList`, `UserCredentials`, `TaskStatus`, `TaskReference` (file: `src/gtasks_manager/core/models.py`)
-- [ ] T008 Implement `TaskCache` in `src/gtasks_manager/core/task_cache.py` per data-model.md with index→ID mapping and `get_task_id()`/`update()` methods (file: `src/gtasks_manager/core/task_cache.py`)
-- [ ] T009 Implement domain exceptions in `src/gtasks_manager/core/exceptions.py` (`APIError`, `AuthenticationError`, `NotFoundError`, `ValidationError`, `RateLimitError`, `NetworkError`) (file: `src/gtasks_manager/core/exceptions.py`)
-- [ ] T010 [P] Implement `TasksAPIProtocol` interface in `src/gtasks_manager/core/ports.py` matching `google-tasks-api.md` adapter protocol (file: `src/gtasks_manager/core/ports.py`)
-- [ ] T011 Implement `TaskService` in `src/gtasks_manager/core/services.py` that depends only on `TasksAPIProtocol` and `TaskCache` and exposes business operations: `list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`, `complete_task` (file: `src/gtasks_manager/core/services.py`)
-- [ ] T012 [P] Implement adapters: Google Tasks adapter skeleton in `src/gtasks_manager/adapters/google_tasks.py` that implements `TasksAPIProtocol` and uses `src/gtasks_manager/config.py` for `CLIENT_CONFIG` and token storage (file: `src/gtasks_manager/adapters/google_tasks.py`)
+- [X] T007 Implement core domain models in `src/gtasks_manager/core/models.py`: `Task`, `TaskList`, `UserCredentials`, `TaskStatus`, `TaskReference` (file: `src/gtasks_manager/core/models.py`)
+- [X] T008 Implement `TaskCache` in `src/gtasks_manager/core/task_cache.py` per data-model.md with index→ID mapping and `get_task_id()`/`update()` methods (file: `src/gtasks_manager/core/task_cache.py`)
+- [X] T009 Implement domain exceptions in `src/gtasks_manager/core/exceptions.py` (`APIError`, `AuthenticationError`, `NotFoundError`, `ValidationError`, `RateLimitError`, `NetworkError`) (file: `src/gtasks_manager/core/exceptions.py`)
+- [X] T010 [P] Implement `TasksAPIProtocol` interface in `src/gtasks_manager/core/ports.py` matching `google-tasks-api.md` adapter protocol (file: `src/gtasks_manager/core/ports.py`)
+- [X] T011 Implement `TaskService` in `src/gtasks_manager/core/services.py` that depends only on `TasksAPIProtocol` and `TaskCache` and exposes business operations: `list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`, `complete_task` (file: `src/gtasks_manager/core/services.py`)
+- [X] T012 [P] Implement adapters: Google Tasks adapter skeleton in `src/gtasks_manager/adapters/google_tasks.py` that implements `TasksAPIProtocol` and uses `src/gtasks_manager/config.py` for `CLIENT_CONFIG` and token storage (file: `src/gtasks_manager/adapters/google_tasks.py`)
 - [ ] T013 Implement storage adapter for token and cache in `src/gtasks_manager/adapters/storage.py` using `pathlib.Path` and `ensure_config_dir()` (file: `src/gtasks_manager/adapters/storage.py`)
 - [ ] T014 Implement DTOs (Pydantic) for Google API in `src/gtasks_manager/adapters/dtos.py` (`GoogleTaskDTO`, `GoogleTaskListDTO`) as per `data-model.md` (file: `src/gtasks_manager/adapters/dtos.py`)
 - [ ] T015 Implement pagination and retry helper utilities in `src/gtasks_manager/adapters/utils.py` (file: `src/gtasks_manager/adapters/utils.py`)
