@@ -25,6 +25,11 @@
 - **MUST** offload all I/O and API calls to background workers using the `@work` decorator to prevent UI hangs.
 - **SHOULD** follow Textual's message-passing patterns for inter-widget communication.
 
+### V. Atomic Commits & Verification
+- **MUST** run all relevant tests and linters before committing.
+- **MUST** create a meaningful git commit after completing each discrete task or sub-task.
+- **MUST** include a clear description of *why* the change was made in the commit message.
+
 ## Development Quality Gates
 
 ### Quality Gate 1: Design & Test Strategy
