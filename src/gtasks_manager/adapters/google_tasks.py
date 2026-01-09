@@ -1,24 +1,24 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
-from ..core.exceptions import APIError, AuthenticationError, NotFoundError, ValidationError
+from ..config import CLIENT_CONFIG, SCOPES, TOKEN_FILE, ensure_config_dir
 from ..core.models import Task, TaskList
 from ..core.ports import TasksAPIProtocol
-from ..config import CLIENT_CONFIG, SCOPES, TOKEN_FILE, ensure_config_dir
+from .dtos import GoogleTaskDTO, GoogleTaskListDTO
+from .utils import execute_with_retry
 
 
 class GoogleTasksAdapter(TasksAPIProtocol):
-    """Adapter for Google Tasks API."""
+    """Adapter for Google Tasks API using DTOs and retry logic."""
 
     def __init__(self):
-        self._creds: Optional[Credentials] = None
-        self._service = None
+        self._creds: Optional[Any] = None
+        self._service: Any = None
         self._load_credentials()
 
     def _load_credentials(self) -> None:
@@ -37,13 +37,15 @@ class GoogleTasksAdapter(TasksAPIProtocol):
 
     def _save_credentials(self) -> None:
         """Save credentials to token file."""
+        if not self._creds:
+            return
         ensure_config_dir()
-        with open(TOKEN_FILE, "w") as f:
+        with open(TOKEN_FILE, "w", encoding="utf-8") as f:
             f.write(self._creds.to_json())
 
     def authenticate(self, force_reauth: bool = False) -> bool:
         """Authenticate with Google Tasks API."""
-        if not force_reauth and self._creds and self._creds.valid:
+        if not force_reauth and self._creds and hasattr(self._creds, "valid") and self._creds.valid:
             return True
 
         flow = InstalledAppFlow.from_client_config(CLIENT_CONFIG, SCOPES)
@@ -53,84 +55,57 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         return True
 
     def _ensure_authenticated(self) -> None:
-        """Check if authenticated."""
+        """Ensure valid service instance."""
         if not self._service:
-            if not self.authenticate():
-                raise AuthenticationError("Not authenticated. Run 'gtasks auth'.")
+            self.authenticate()
 
     def list_task_lists(self) -> List[TaskList]:
         """Get all task lists."""
         self._ensure_authenticated()
-        try:
-            results = self._service.tasklists().list().execute()
-            items = results.get("items", [])
-            # For now returning simple models, DTOs will come in T014
-            return [
-                TaskList(
-                    id=item["id"],
-                    title=item["title"],
-                    updated=datetime.fromisoformat(item["updated"].replace("Z", "+00:00")),
-                )
-                for item in items
-            ]
-        except HttpError as e:
-            raise APIError(f"API Error: {e}")
+
+        def request():
+            return self._service.tasklists().list()
+
+        response = execute_with_retry(request)
+        items = response.get("items", [])
+        return [GoogleTaskListDTO(**item).to_domain() for item in items]
 
     def list_tasks(self, list_id: str, show_completed: bool = False) -> List[Task]:
-        """Get tasks from a list."""
+        """Get tasks from a list with pagination."""
         self._ensure_authenticated()
-        try:
-            results = (
-                self._service.tasks()
-                .list(tasklist=list_id, showCompleted=show_completed, showHidden=show_completed)
-                .execute()
-            )
-            items = results.get("items", [])
-            return [
-                Task(
-                    id=item["id"],
-                    title=item["title"],
-                    status=item["status"],
-                    list_id=list_id,
-                    updated=datetime.fromisoformat(item["updated"].replace("Z", "+00:00")),
-                    notes=item.get("notes"),
-                    due=datetime.fromisoformat(item["due"].replace("Z", "+00:00"))
-                    if "due" in item
-                    else None,
-                    completed=datetime.fromisoformat(item["completed"].replace("Z", "+00:00"))
-                    if "completed" in item
-                    else None,
+        all_tasks = []
+        page_token = None
+
+        while True:
+            # page_token captured in closure
+            def request(token=page_token):
+                return self._service.tasks().list(
+                    tasklist=list_id,
+                    showCompleted=show_completed,
+                    showHidden=show_completed,
+                    pageToken=token,
+                    maxResults=100,
                 )
-                for item in items
-            ]
-        except HttpError as e:
-            if e.resp.status == 404:
-                raise NotFoundError(f"Task list {list_id} not found")
-            raise APIError(f"API Error: {e}")
+
+            response = execute_with_retry(request)
+            items = response.get("items", [])
+            all_tasks.extend([GoogleTaskDTO(**item).to_domain(list_id) for item in items])
+
+            page_token = response.get("nextPageToken")
+            if not page_token:
+                break
+
+        return all_tasks
 
     def get_task(self, list_id: str, task_id: str) -> Task:
         """Get a specific task."""
         self._ensure_authenticated()
-        try:
-            item = self._service.tasks().get(tasklist=list_id, task=task_id).execute()
-            return Task(
-                id=item["id"],
-                title=item["title"],
-                status=item["status"],
-                list_id=list_id,
-                updated=datetime.fromisoformat(item["updated"].replace("Z", "+00:00")),
-                notes=item.get("notes"),
-                due=datetime.fromisoformat(item["due"].replace("Z", "+00:00"))
-                if "due" in item
-                else None,
-                completed=datetime.fromisoformat(item["completed"].replace("Z", "+00:00"))
-                if "completed" in item
-                else None,
-            )
-        except HttpError as e:
-            if e.resp.status == 404:
-                raise NotFoundError(f"Task {task_id} not found")
-            raise APIError(f"API Error: {e}")
+
+        def request():
+            return self._service.tasks().get(tasklist=list_id, task=task_id)
+
+        item = execute_with_retry(request)
+        return GoogleTaskDTO(**item).to_domain(list_id)
 
     def create_task(
         self, list_id: str, title: str, notes: Optional[str] = None, due: Optional[datetime] = None
@@ -142,13 +117,12 @@ class GoogleTasksAdapter(TasksAPIProtocol):
             body["notes"] = notes
         if due:
             body["due"] = due.isoformat() + "Z"
-        try:
-            item = self._service.tasks().insert(tasklist=list_id, body=body).execute()
-            return self.get_task(list_id, item["id"])
-        except HttpError as e:
-            if e.resp.status == 400:
-                raise ValidationError(f"Invalid task data: {e}")
-            raise APIError(f"API Error: {e}")
+
+        def request():
+            return self._service.tasks().insert(tasklist=list_id, body=body)
+
+        item = execute_with_retry(request)
+        return GoogleTaskDTO(**item).to_domain(list_id)
 
     def update_task(
         self,
@@ -171,25 +145,20 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         if status is not None:
             body["status"] = status
 
-        try:
-            self._service.tasks().patch(tasklist=list_id, task=task_id, body=body).execute()
-            return self.get_task(list_id, task_id)
-        except HttpError as e:
-            if e.resp.status == 404:
-                raise NotFoundError(f"Task {task_id} not found")
-            if e.resp.status == 400:
-                raise ValidationError(f"Invalid update data: {e}")
-            raise APIError(f"API Error: {e}")
+        def request():
+            return self._service.tasks().patch(tasklist=list_id, task=task_id, body=body)
+
+        item = execute_with_retry(request)
+        return GoogleTaskDTO(**item).to_domain(list_id)
 
     def delete_task(self, list_id: str, task_id: str) -> None:
         """Delete a task."""
         self._ensure_authenticated()
-        try:
-            self._service.tasks().delete(tasklist=list_id, task=task_id).execute()
-        except HttpError as e:
-            if e.resp.status == 404:
-                raise NotFoundError(f"Task {task_id} not found")
-            raise APIError(f"API Error: {e}")
+
+        def request():
+            return self._service.tasks().delete(tasklist=list_id, task=task_id)
+
+        execute_with_retry(request)
 
     def complete_task(self, list_id: str, task_id: str) -> Task:
         """Mark task as complete."""

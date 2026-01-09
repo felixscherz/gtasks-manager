@@ -23,11 +23,11 @@
 - [X] T010 [P] Implement `TasksAPIProtocol` interface in `src/gtasks_manager/core/ports.py` matching `google-tasks-api.md` adapter protocol (file: `src/gtasks_manager/core/ports.py`)
 - [X] T011 Implement `TaskService` in `src/gtasks_manager/core/services.py` that depends only on `TasksAPIProtocol` and `TaskCache` and exposes business operations: `list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`, `complete_task` (file: `src/gtasks_manager/core/services.py`)
 - [X] T012 [P] Implement adapters: Google Tasks adapter skeleton in `src/gtasks_manager/adapters/google_tasks.py` that implements `TasksAPIProtocol` and uses `src/gtasks_manager/config.py` for `CLIENT_CONFIG` and token storage (file: `src/gtasks_manager/adapters/google_tasks.py`)
-- [ ] T013 Implement storage adapter for token and cache in `src/gtasks_manager/adapters/storage.py` using `pathlib.Path` and `ensure_config_dir()` (file: `src/gtasks_manager/adapters/storage.py`)
-- [ ] T014 Implement DTOs (Pydantic) for Google API in `src/gtasks_manager/adapters/dtos.py` (`GoogleTaskDTO`, `GoogleTaskListDTO`) as per `data-model.md` (file: `src/gtasks_manager/adapters/dtos.py`)
-- [ ] T015 Implement pagination and retry helper utilities in `src/gtasks_manager/adapters/utils.py` (file: `src/gtasks_manager/adapters/utils.py`)
-- [ ] T016 Implement unit tests for core models and TaskCache in `tests/unit/test_models.py` and `tests/unit/test_task_cache.py` (file: `tests/unit/test_models.py`, `tests/unit/test_task_cache.py`)
-- [ ] T017 Add CI step to run unit tests and fail fast if foundational tests fail (file: `.github/workflows/python.yml`)
+- [X] T013 Implement storage adapter for token and cache in `src/gtasks_manager/adapters/storage.py` using `pathlib.Path` and `ensure_config_dir()` (file: `src/gtasks_manager/adapters/storage.py`)
+- [X] T014 Implement DTOs (Pydantic) for Google API in `src/gtasks_manager/adapters/dtos.py` (`GoogleTaskDTO`, `GoogleTaskListDTO`) as per `data-model.md` (file: `src/gtasks_manager/adapters/dtos.py`)
+- [X] T015 Implement pagination and retry helper utilities in `src/gtasks_manager/adapters/utils.py` (file: `src/gtasks_manager/adapters/utils.py`)
+- [X] T016 Implement unit tests for core models and TaskCache in `tests/unit/test_models.py` and `tests/unit/test_task_cache.py` (file: `tests/unit/test_models.py`, `tests/unit/test_task_cache.py`)
+- [X] T017 Add CI step to run unit tests and fail fast if foundational tests fail (file: `.github/workflows/python.yml`)
 
 ---
 
@@ -39,21 +39,22 @@
 
 ### Tests for User Story 1
 
-- [ ] T018 [P] [US1] Add contract tests for adapter methods in `tests/contract/test_google_tasks_adapter.py` (file: `tests/contract/test_google_tasks_adapter.py`)
-- [ ] T019 [P] [US1] Add integration tests for CLI commands in `tests/integration/test_cli_commands.py` using `CliRunner` and mocked API adapter (file: `tests/integration/test_cli_commands.py`)
-- [ ] T020 [US1] Add unit tests for `TaskService` business logic in `tests/unit/test_services.py` (file: `tests/unit/test_services.py`)
+- [X] T018 [P] [US1] Add contract tests for adapter methods in `tests/contract/test_google_tasks_adapter.py` (file: `tests/contract/test_google_tasks_adapter.py`)
+- [X] T019 [P] [US1] Add integration tests for CLI commands in `tests/integration/test_cli_commands.py` using `CliRunner` and mocked API adapter (file: `tests/integration/test_cli_commands.py`)
+- [X] T020 [US1] Add unit tests for `TaskService` business logic in `tests/unit/test_services.py` (file: `tests/unit/test_services.py`)
 
 ### Implementation for User Story 1
 
-- [ ] T021 [P] [US1] Create CLI entrypoint `src/gtasks_manager/cli/main.py` with `click` command group `gtasks` and commands stubbed (file: `src/gtasks_manager/cli/main.py`)
-- [ ] T022 [P] [US1] Implement `auth` and `logout` commands in `src/gtasks_manager/cli/commands/auth.py` calling adapter `authenticate()` and storage clear (file: `src/gtasks_manager/cli/commands/auth.py`)
-- [ ] T023 [P] [US1] Implement `tasks` commands in `src/gtasks_manager/cli/commands/tasks.py`: `create`, `list`, `update`, `delete`, `complete` and the `--list-id` option (file: `src/gtasks_manager/cli/commands/tasks.py`)
-- [ ] T024 [US1] Implement `lists` command in `src/gtasks_manager/cli/commands/lists.py` to show available task lists (file: `src/gtasks_manager/cli/commands/lists.py`)
-- [ ] T025 [US1] Implement `formatters` in `src/gtasks_manager/cli/formatters.py` to produce human-readable and JSON output (file: `src/gtasks_manager/cli/formatters.py`)
-- [ ] T026 [US1] Wire CLI to `TaskService` in `src/gtasks_manager/cli/main.py` and ensure dependency injection (file: `src/gtasks_manager/cli/main.py`)
-- [ ] T027 [US1] Implement CLI-specific error handling to translate domain exceptions to user-friendly `click.echo()` messages (file: `src/gtasks_manager/cli/main.py`)
-- [ ] T028 [US1] Add unit tests for CLI formatters and command error handling in `tests/unit/test_cli_formatters.py` (file: `tests/unit/test_cli_formatters.py`)
-- [ ] T029 [US1] Add integration test for full CLI workflow in `tests/integration/test_cli_workflow.py` (file: `tests/integration/test_cli_workflow.py`)
+- [X] T021 [P] [US1] Create CLI entrypoint `src/gtasks_manager/cli/main.py` with `click` command group `gtasks` and commands stubbed (file: `src/gtasks_manager/cli/main.py`)
+- [X] T022 [P] [US1] Implement `auth` and `logout` commands in `src/gtasks_manager/cli/commands/auth.py` calling adapter `authenticate()` and storage clear (file: `src/gtasks_manager/cli/commands/auth.py`)
+- [X] T023 [P] [US1] Implement `tasks` commands in `src/gtasks_manager/cli/commands/tasks.py`: `create`, `list`, `update`, `delete`, `complete` and the `--list-id` option (file: `src/gtasks_manager/cli/commands/tasks.py`)
+- [X] T024 [US1] Implement `lists` command in `src/gtasks_manager/cli/commands/lists.py` to show available task lists (file: `src/gtasks_manager/cli/commands/lists.py`)
+- [X] T025 [US1] Implement `formatters` in `src/gtasks_manager/cli/formatters.py` to produce human-readable and JSON output (file: `src/gtasks_manager/cli/formatters.py`)
+- [X] T026 [US1] Wire CLI to `TaskService` in `src/gtasks_manager/cli/main.py` and ensure dependency injection (file: `src/gtasks_manager/cli/main.py`)
+- [X] T027 [US1] Implement CLI-specific error handling to translate domain exceptions to user-friendly `click.echo()` messages (file: `src/gtasks_manager/cli/main.py`)
+- [X] T028 [US1] Add unit tests for CLI formatters and command error handling in `tests/unit/test_cli_formatters.py` (file: `tests/unit/test_cli_formatters.py`)
+- [X] T029 [US1] Add integration test for full CLI workflow in `tests/integration/test_cli_workflow.py` (file: `tests/integration/test_cli_workflow.py`)
+
 
 **Checkpoint**: After these tasks, US1 should be fully functional and independently testable.
 

@@ -23,11 +23,13 @@ class TaskService:
         self.cache.update(tasks, show_completed)
         return tasks
 
-    def get_task(self, list_id: str, reference: TaskReference) -> Task:
+    def get_task(
+        self, list_id: str, reference: TaskReference, completed_cache: bool = False
+    ) -> Task:
         """Get a specific task by ID or index."""
-        task_id = self.cache.get_task_id(reference)
+        task_id = self.cache.get_task_id(reference, completed_cache)
         if not task_id:
-            # Fallback to assuming it's an ID if not in cache (or if int but not in cache)
+            # Fallback to assuming it's an ID if not in cache
             task_id = str(reference)
         return self.api.get_task(list_id, task_id)
 
@@ -45,16 +47,19 @@ class TaskService:
         notes: Optional[str] = None,
         due: Optional[datetime] = None,
         status: Optional[str] = None,
+        completed_cache: bool = False,
     ) -> Task:
         """Update an existing task."""
-        task_id = self.cache.get_task_id(reference)
+        task_id = self.cache.get_task_id(reference, completed_cache)
         if not task_id:
             task_id = str(reference)
         return self.api.update_task(list_id, task_id, title, notes, due, status)
 
-    def delete_task(self, list_id: str, reference: TaskReference) -> None:
+    def delete_task(
+        self, list_id: str, reference: TaskReference, completed_cache: bool = False
+    ) -> None:
         """Delete a task."""
-        task_id = self.cache.get_task_id(reference)
+        task_id = self.cache.get_task_id(reference, completed_cache)
         if not task_id:
             task_id = str(reference)
         self.api.delete_task(list_id, task_id)

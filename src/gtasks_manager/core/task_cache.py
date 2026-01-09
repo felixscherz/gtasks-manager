@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from .models import Task, TaskReference
@@ -33,3 +34,36 @@ class TaskCache:
             self.active_tasks = cache
 
         self.last_updated = datetime.utcnow()
+
+    @classmethod
+    def load(cls, path: Optional[Path] = None) -> "TaskCache":
+        """Load cache from a file or return empty if not found."""
+        if not path or not path.exists():
+            return cls(active_tasks={}, completed_tasks={}, last_updated=datetime.utcnow())
+
+        import json
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return cls(
+                    active_tasks={int(k): v for k, v in data.get("active_tasks", {}).items()},
+                    completed_tasks={int(k): v for k, v in data.get("completed_tasks", {}).items()},
+                    last_updated=datetime.fromisoformat(data["last_updated"])
+                    if "last_updated" in data
+                    else datetime.utcnow(),
+                )
+        except Exception:
+            return cls(active_tasks={}, completed_tasks={}, last_updated=datetime.utcnow())
+
+    def save(self, path: Path) -> None:
+        """Save cache to a file."""
+        import json
+
+        data = {
+            "active_tasks": self.active_tasks,
+            "completed_tasks": self.completed_tasks,
+            "last_updated": self.last_updated.isoformat(),
+        }
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
