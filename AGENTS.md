@@ -321,6 +321,8 @@ Python version: `>=3.11`
 
 ## Active Technologies
 - Local filesystem (OAuth tokens in `~/.config/gtasks-manager/token.json`) (001-google-tasks-cli-tui)
+- Python 3.11 (project-wide requirement from constitution) + `textual` (TUI), `click` (CLI), `google-api-python-client` (adapters), `pydantic` (dtos/validation), `pytest` + `pytest-asyncio` (testing) (002-add-vim-keybindings)
+- N/A (feature operates on in-memory UI state and existing task storage/backends) (002-add-vim-keybindings)
 
 ## Recent Changes
 - 001-google-tasks-cli-tui: Added Python 3.11+

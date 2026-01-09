@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  title: GTasks Manager - TUI Keybindings Actions
+  version: 0.1.0
+paths:
+  /tui/actions/toggle-completion:
+    post:
+      summary: Toggle completion state for a task (TUI action)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_id:
+                  type: string
+              required:
+                - task_id
+      responses:
+        '200':
+          description: Task toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '503':
+          description: Service unavailable - persistence failed
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum:
+            - needsAction
+            - completed
+        notes:
+          type: string
+        due:
+          type: string
+          format: date-time
