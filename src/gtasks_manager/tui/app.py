@@ -1,16 +1,14 @@
 import logging
-from typing import List, Optional
 
 from textual import work
 from textual.app import App, ComposeResult
-from textual.events import Key
 from textual.reactive import reactive
 from textual.widgets import Footer, Header, ListItem, ListView, Static
 
 from gtasks_manager.core.models import Task, TaskList, TaskStatus, UIFocus, UIFocusPane
 from gtasks_manager.core.services import TaskService
 from gtasks_manager.tui.keybindings import KeyBindingManager
-from gtasks_manager.tui.utils import announce_for_accessibility, is_focused_on_input
+from gtasks_manager.tui.utils import announce_for_accessibility
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +25,15 @@ class TasksApp(App):
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("r", "refresh", "Refresh"),
-        ("enter", "toggle_task", "Toggle task"),
+        ("enter", "toggle_completion", "Toggle task"),
+        ("j", "move_down", "Move down"),
+        ("k", "move_up", "Move up"),
+        ("h", "move_left", "Move left"),
+        ("l", "move_right", "Move right"),
     ]
 
-    tasks: reactive[List[Task]] = reactive([])
-    task_lists: reactive[List[TaskList]] = reactive([])
+    tasks: reactive[list[Task]] = reactive([])
+    task_lists: reactive[list[TaskList]] = reactive([])
     current_list_id: reactive[str] = reactive("@default")
     loading_state: reactive[bool] = reactive(False)
     vim_enabled: reactive[bool] = reactive(True)
@@ -39,6 +41,9 @@ class TasksApp(App):
     def __init__(self, service: TaskService):
         super().__init__()
         self.service = service
+        self.keybinding_manager = KeyBindingManager()
+        self.ui_focus: UIFocus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
+        self.selected_task_id: str | None = None
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -79,7 +84,7 @@ class TasksApp(App):
         try:
             indicator = self.query_one("#vim-status", Static)
             indicator.update("[VIM]" if enabled else "")
-        except:
+        except Exception:
             pass
         self.keybinding_manager.set_enabled(enabled)
 

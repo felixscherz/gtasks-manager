@@ -88,3 +88,92 @@ class TestTUIViewNavigation:
             app.ui_focus = UIFocus(pane=UIFocusPane.SIDEBAR, index=0)
             await pilot.press("l")
             assert app.ui_focus.pane == UIFocusPane.TASK_LIST
+
+    @pytest.mark.asyncio
+    async def test_empty_task_list_handles_vim_navigation(self, app):
+        """Test that VIM navigation doesn't crash with empty task list."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
+            app.tasks = []
+            await pilot.press("j")
+            await pilot.press("k")
+            assert app.ui_focus.index == 0
+            assert not any(task.status == TaskStatus.COMPLETED for task in app.tasks)
+
+    @pytest.mark.asyncio
+    async def test_enter_key_toggles_task_completion(self, app):
+        """Test pressing ENTER toggles task from NEEDS_ACTION to COMPLETED."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
+            app.tasks = [
+                Task(
+                    id="task1",
+                    title="Task 1",
+                    status=TaskStatus.NEEDS_ACTION,
+                    list_id="list1",
+                    updated=None,
+                ),
+            ]
+            await pilot.press("enter")
+            assert app.tasks[0].status == TaskStatus.COMPLETED
+
+    @pytest.mark.asyncio
+    async def test_enter_key_toggles_task_back(self, app):
+        """Test pressing ENTER twice toggles status back."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
+            app.tasks = [
+                Task(
+                    id="task1",
+                    title="Task 1",
+                    status=TaskStatus.NEEDS_ACTION,
+                    list_id="list1",
+                    updated=None,
+                ),
+            ]
+            await pilot.press("enter")
+            assert app.tasks[0].status == TaskStatus.COMPLETED
+            await pilot.press("enter")
+            assert app.tasks[0].status == TaskStatus.NEEDS_ACTION
+
+    @pytest.mark.asyncio
+    async def test_enter_key_does_nothing_when_no_selection(self, app):
+        """Test pressing ENTER with no selection does nothing."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
+            app.tasks = [
+                Task(
+                    id="task1",
+                    title="Task 1",
+                    status=TaskStatus.NEEDS_ACTION,
+                    list_id="list1",
+                    updated=None,
+                ),
+            ]
+            initial_status = app.tasks[0].status
+            await pilot.press("enter")
+            assert app.tasks[0].status == initial_status
+
+    @pytest.mark.asyncio
+    async def test_rapid_key_presses_handled_correctly(self, app):
+        """Test rapid ENTER presses don't break state."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
+            app.tasks = [
+                Task(
+                    id="task1",
+                    title="Task 1",
+                    status=TaskStatus.NEEDS_ACTION,
+                    list_id="list1",
+                    updated=None,
+                ),
+            ]
+            await pilot.press("enter")
+            await pilot.press("enter")
+            await pilot.press("enter")
+            assert app.tasks[0].status == TaskStatus.NEEDS_ACTION
