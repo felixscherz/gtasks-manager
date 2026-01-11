@@ -4,6 +4,36 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 
+class UIFocusPane(str, Enum):
+    """Represents the different panes in the TUI."""
+
+    SIDEBAR = "sidebar"
+    TASK_LIST = "task_list"
+    DETAILS = "details"
+    INPUT = "input"
+
+
+@dataclass
+class UIFocus:
+    """Represents the current UI focus state."""
+
+    pane: UIFocusPane
+    index: Optional[int] = None
+
+    def validate_index(self, max_length: int) -> bool:
+        """Validate that the index is within bounds.
+
+        Args:
+            max_length: The maximum valid index (exclusive)
+
+        Returns:
+            True if index is None or within [0, max_length), False otherwise
+        """
+        if self.index is None:
+            return True
+        return 0 <= self.index < max_length
+
+
 class TaskStatus(str, Enum):
     """Task completion status."""
 
@@ -19,7 +49,7 @@ class Task:
     title: str
     status: TaskStatus
     list_id: str
-    updated: datetime
+    updated: Optional[datetime] = None
     notes: Optional[str] = None
     due: Optional[datetime] = None
     completed: Optional[datetime] = None
@@ -50,7 +80,7 @@ class TaskList:
 
     id: str
     title: str
-    updated: datetime
+    updated: Optional[datetime] = None
 
 
 @dataclass

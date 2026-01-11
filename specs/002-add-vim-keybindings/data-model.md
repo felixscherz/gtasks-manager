@@ -28,6 +28,16 @@ This document describes entities introduced or affected by the VIM keybindings f
     - `mappings`: Dict[str, str] mapping key -> action (e.g., `{'j': 'move_down'}`)
   - Validation:
     - `mappings` keys must be single-character strings
+  - Default Mappings:
+    ```python
+    {
+        'j': 'move_down',
+        'k': 'move_up',
+        'h': 'move_left',
+        'l': 'move_right',
+        'Enter': 'toggle_completion',
+    }
+    ```
 
 ## State Transitions
 
@@ -49,4 +59,4 @@ This document describes entities introduced or affected by the VIM keybindings f
 - Integration tests: TUI navigation updates `UI Focus` correctly and `Enter` toggles `Task.status` with optimistic update and rollback
 
 
-(End of data model)
+ (End of data model)

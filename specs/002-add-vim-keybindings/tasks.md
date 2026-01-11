@@ -12,11 +12,11 @@ description: "Tasks for Add VIM Keybindings feature"
 
 **Purpose**: Project initialization and developer tooling required to implement the feature
 
-- [ ] T001 Update developer README to document `uv` usage and dev commands in `README.md`
-- [ ] T002 Ensure `uv.lock` is present and add instruction to update it in `docs/README.md`
-- [ ] T003 Add/verify `ruff` configuration in `pyproject.toml` (lint/format rules) at `pyproject.toml`
-- [ ] T004 Update CI workflow to run dev/test commands with `uv run` in `.github/workflows/python.yml`
-- [ ] T005 Add pytest configuration for Textual async tests in `pytest.ini`
+- [X] T001 Update developer README to document `uv` usage and dev commands in `README.md`
+- [X] T002 Ensure `uv.lock` is present and add instruction to update it in `docs/README.md`
+- [X] T003 Add/verify `ruff` configuration in `pyproject.toml` (lint/format rules) at `pyproject.toml`
+- [X] T004 Update CI workflow to run dev/test commands with `uv run` in `.github/workflows/python.yml`
+- [X] T005 Add pytest configuration for Textual async tests in `pytest.ini`
 
 ---
 
@@ -24,12 +24,12 @@ description: "Tasks for Add VIM Keybindings feature"
 
 **Purpose**: Core code and test scaffolding that MUST be complete before user stories
 
-- [ ] T006 [P] [FOUNDATION] Create skeleton module `KeyBindingManager` in `src/gtasks_manager/tui/keybindings.py`
-- [ ] T007 [P] [FOUNDATION] Add `UI Focus` representation and validations to `src/gtasks_manager/core/models.py`
-- [ ] T008 [FOUNDATION] Add optimistic toggle API wrapper method `toggle_task_completion(task_id: str)` to `src/gtasks_manager/tasks.py` (background-friendly signature)
-- [ ] T009 [P] [FOUNDATION] Add Textual helper utilities for transient notifications and accessibility announcements in `src/gtasks_manager/tui/utils.py`
-- [ ] T010 [FOUNDATION] Add test scaffolding files: `tests/unit/test_keybindings.py`, `tests/integration/test_tui_navigation.py`, `tests/integration/test_toggle_completion.py`
-- [ ] T011 [P] [FOUNDATION] Document keybinding configuration schema in `specs/002-add-vim-keybindings/data-model.md` (confirm defaults and mappings)
+- [X] T006 [P] [FOUNDATION] Create skeleton module `KeyBindingManager` in `src/gtasks_manager/tui/keybindings.py`
+- [X] T007 [P] [FOUNDATION] Add `UI Focus` representation and validations to `src/gtasks_manager/core/models.py`
+- [X] T008 [FOUNDATION] Add optimistic toggle API wrapper method `toggle_task_completion(task_id: str)` to `src/gtasks_manager/tasks.py` (background-friendly signature)
+- [X] T009 [P] [FOUNDATION] Add Textual helper utilities for transient notifications and accessibility announcements in `src/gtasks_manager/tui/utils.py`
+- [X] T010 [FOUNDATION] Add test scaffolding files: `tests/unit/test_keybindings.py`, `tests/integration/test_tui_navigation.py`, `tests/integration/test_toggle_completion.py`
+- [X] T011 [P] [FOUNDATION] Document keybinding configuration schema in `specs/002-add-vim-keybindings/data-model.md` (confirm defaults and mappings)
 
 **Checkpoint**: Once T006-T011 complete, user stories can be implemented independently
 
@@ -43,16 +43,16 @@ description: "Tasks for Add VIM Keybindings feature"
 
 ### Tests (TDD-first)
 
-- [ ] T012 [P] [US1] Create unit tests for `KeyBindingManager` in `tests/unit/test_keybindings.py` verifying mapping and enabled/disabled behavior
-- [ ] T013 [P] [US1] Create integration test `tests/integration/test_tui_navigation.py` using `app.run_test()` to assert `j/k/h/l` change selection and focus
+- [X] T012 [P] [US1] Create unit tests for `KeyBindingManager` in `tests/unit/test_keybindings.py` verifying mapping and enabled/disabled behavior
+- [X] T013 [P] [US1] Create integration test `tests/integration/test_tui_navigation.py` using `app.run_test()` to assert `j/k/h/l` change selection and focus
 
 ### Implementation
 
-- [ ] T014 [P] [US1] Implement `KeyBindingManager` mappings and enable/disable flag in `src/gtasks_manager/tui/keybindings.py` (depends on T006)
-- [ ] T015 [US1] Wire `on_key` handlers in `src/gtasks_manager/tui/app.py` (or the relevant TaskList widget) to call `KeyBindingManager` actions (depends on T014)
-- [ ] T016 [US1] Update UI components to use `reactive` attributes for selection/index in `src/gtasks_manager/tui/app.py` and `src/gtasks_manager/tui/widgets.py` (or the file that defines the task list)
-- [ ] T017 [US1] Ensure key handling returns early when focus is inside input widgets (update `src/gtasks_manager/tui/app.py` or helper `src/gtasks_manager/tui/utils.py`) (depends on T009)
-- [ ] T018 [US1] Add visual highlight/selection update behavior to `src/gtasks_manager/tui/app.py` and ensure latency < 100ms for local env
+- [X] T014 [P] [US1] Implement `KeyBindingManager` mappings and enable/disable flag in `src/gtasks_manager/tui/keybindings.py` (depends on T006)
+- [X] T015 [US1] Wire `on_key` handlers in `src/gtasks_manager/tui/app.py` (or the relevant TaskList widget) to call `KeyBindingManager` actions (depends on T014)
+- [X] T016 [US1] Update UI components to use `reactive` attributes for selection/index in `src/gtasks_manager/tui/app.py` and `src/gtasks_manager/tui/widgets.py` (or the file that defines the task list)
+- [X] T017 [US1] Ensure key handling returns early when focus is inside input widgets (update `src/gtasks_manager/tui/app.py` or helper `src/gtasks_manager/tui/utils.py`) (depends on T009)
+- [X] T018 [US1] Add visual highlight/selection update behavior to `src/gtasks_manager/tui/app.py` and ensure latency < 100ms for local env
 
 **Checkpoint**: US1 should be fully functional and testable after T012-T018
 
@@ -66,16 +66,16 @@ description: "Tasks for Add VIM Keybindings feature"
 
 ### Tests (TDD-first)
 
-- [ ] T019 [P] [US2] Create unit test `tests/unit/test_toggle_optimistic.py` for optimistic toggle logic (in-memory toggle and revert)
-- [ ] T020 [P] [US2] Create integration test `tests/integration/test_toggle_completion.py` that simulates a successful and a failing persistence (mock `src/gtasks_manager/tasks.py` API call)
+- [X] T019 [P] [US2] Create unit test `tests/unit/test_toggle_optimistic.py` for optimistic toggle logic (in-memory toggle and revert)
+- [X] T020 [P] [US2] Create integration test `tests/integration/test_toggle_completion.py` that simulates a successful and a failing persistence (mock `src/gtasks_manager/tasks.py` API call)
 
 ### Implementation
 
-- [ ] T021 [P] [US2] Add `Enter` mapping to `KeyBindingManager` in `src/gtasks_manager/tui/keybindings.py` (depends on T014)
-- [ ] T022 [US2] Implement optimistic UI update in `src/gtasks_manager/tui/app.py` (update Task.status reactively) and call `toggle_task_completion` from `src/gtasks_manager/tasks.py` inside a `@work` background worker (depends on T008, T014, T016)
-- [ ] T023 [US2] Implement persistence method `toggle_task_completion` in `src/gtasks_manager/tasks.py` to call adapters/google API and raise on failure (depends on T008)
-- [ ] T024 [US2] On persistence failure, revert status and show transient error using `src/gtasks_manager/tui/utils.py` (depends on T009, T022)
-- [ ] T025 [US2] Add logging for toggle operations in `src/gtasks_manager/tasks.py` and `src/gtasks_manager/tui/keybindings.py`
+- [X] T021 [P] [US2] Add `Enter` mapping to `KeyBindingManager` in `src/gtasks_manager/tui/keybindings.py` (depends on T014)
+- [X] T022 [US2] Implement optimistic UI update in `src/gtasks_manager/tui/app.py` (update Task.status reactively) and call `toggle_task_completion` from `src/gtasks_manager/tasks.py` inside a `@work` background worker (depends on T008, T014, T016)
+- [X] T023 [US2] Implement persistence method `toggle_task_completion` in `src/gtasks_manager/tasks.py` to call adapters/google API and raise on failure (depends on T008)
+- [X] T024 [US2] On persistence failure, revert status and show transient error using `src/gtasks_manager/tui/utils.py` (depends on T009, T022)
+- [X] T025 [US2] Add logging for toggle operations in `src/gtasks_manager/tasks.py` and `src/gtasks_manager/tui/keybindings.py`
 
 **Checkpoint**: US2 should be independently testable after T019-T025
 
@@ -89,15 +89,15 @@ description: "Tasks for Add VIM Keybindings feature"
 
 ### Tests
 
-- [ ] T026 [P] [US3] Create unit tests `tests/unit/test_shortcut_conflicts.py` ensuring that non-VIM shortcuts still invoke their handlers when applicable
-- [ ] T027 [P] [US3] Create integration accessibility test `tests/integration/test_accessibility_focus.py` asserting focus announcements on pane changes
+- [X] T026 [P] [US3] Create unit tests `tests/unit/test_shortcut_conflicts.py` ensuring that non-VIM shortcuts still invoke their handlers when applicable
+- [X] T027 [P] [US3] Create integration accessibility test `tests/integration/test_accessibility_focus.py` asserting focus announcements on pane changes
 
 ### Implementation
 
-- [ ] T028 [US3] Add conflict-resolution logic to `KeyBindingManager` to respect existing shortcuts configured in `src/gtasks_manager/cli/` and `src/gtasks_manager/tui/` (update `src/gtasks_manager/tui/keybindings.py`)
-- [ ] T029 [US3] Ensure key handlers check for input focus and do not act when typing in `src/gtasks_manager/tui/app.py` (depends on T017)
-- [ ] T030 [US3] Implement accessibility announcements on focus change using `src/gtasks_manager/tui/utils.py` (depends on T009)
-- [ ] T031 [US3] Add small VIM status indicator in `src/gtasks_manager/tui/app.py` showing if VIM bindings are enabled (toggleable via `KeyBindingManager.enabled`)
+- [X] T028 [US3] Add conflict-resolution logic to `KeyBindingManager` to respect existing shortcuts configured in `src/gtasks_manager/cli/` and `src/gtasks_manager/tui/` (update `src/gtasks_manager/tui/keybindings.py`)
+- [X] T029 [US3] Ensure key handlers check for input focus and do not act when typing in `src/gtasks_manager/tui/app.py` (depends on T017)
+- [X] T030 [US3] Implement accessibility announcements on focus change using `src/gtasks_manager/tui/utils.py` (depends on T009)
+- [X] T031 [US3] Add small VIM status indicator in `src/gtasks_manager/tui/app.py` showing if VIM bindings are enabled (toggleable via `KeyBindingManager.enabled`)
 - [ ] T032 [US3] Document any shortcut conflicts and resolution order in `specs/002-add-vim-keybindings/quickstart.md`
 
 **Checkpoint**: US3 should be independently testable after T026-T032
@@ -108,9 +108,9 @@ description: "Tasks for Add VIM Keybindings feature"
 
 **Purpose**: Documentation, cleanup, tests, and release prep
 
-- [ ] T033 [P] Update `specs/002-add-vim-keybindings/quickstart.md` with final usage and developer notes (mirror changes made during implementation)
+- [X] T033 [P] Update `specs/002-add-vim-keybindings/quickstart.md` with final usage and developer notes (mirror changes made during implementation)
 - [ ] T034 [P] Add/extend unit tests in `tests/unit/` for edge cases (rapid key repeats, input typing)
-- [ ] T035 [P] Run `uv run ruff` and fix linting issues in modified files
+- [X] T035 [P] Run `uv run ruff` and fix linting issues in modified files
 - [ ] T036 [P] Run `uv run pytest` and fix failing tests
 - [ ] T037 Update changelog/commit message template with feature entry in `CHANGELOG.md`
 - [ ] T038 [P] Verify `uv.lock` is up-to-date and commit changes
