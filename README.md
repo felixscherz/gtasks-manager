@@ -1,6 +1,6 @@
 # Google Tasks Manager
 
-A command-line tool for managing your Google Tasks from the terminal.
+A command-line tool for managing your Google Tasks from the terminal with dual interfaces: CLI for quick commands and TUI for visual task management.
 
 ## Features
 
@@ -10,11 +10,47 @@ A command-line tool for managing your Google Tasks from the terminal.
 - Delete tasks
 - View all task lists
 - Built-in OAuth2 authentication with Google
+- TUI with VIM-style keybindings (h/j/k/l navigation, Enter to toggle)
+
+## TUI Usage
+
+The TUI provides a visual interface with VIM-style keybindings:
+
+### Navigation
+- `j` / `k`: Move selection down/up
+- `h` / `l`: Move focus left/right between panes
+- `q`: Quit
+- `r`: Refresh tasks
+
+### Task Management
+- `Enter`: Toggle completion of selected task
+
+### Notes
+- VIM keybindings are enabled by default
+- Keybindings do not trigger when typing into text inputs
+- If persistence fails when toggling, the UI will briefly show an error message and revert
 
 ## Installation
 
+### Standard Installation
+
 ```bash
 pip install -e .
+```
+
+### Development Installation with uv
+
+For development, we recommend using `uv` for faster package management:
+
+```bash
+# Install uv if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install in development mode with uv
+uv pip install -e .
+
+# Or using uv sync (recommended)
+uv sync
 ```
 
 ## Quick Start
@@ -36,6 +72,62 @@ pip install -e .
    ```
 
 That's it! No additional setup required.
+
+## Development Commands
+
+### Running the Application
+
+```bash
+# Run CLI after standard installation
+gtasks --help
+gtasks auth
+gtasks list
+gtasks create "Task title"
+
+# Run directly from source
+uv run gtasks --help
+uv run gtasks auth
+uv run gtasks list
+
+# Run TUI with VIM keybindings
+gtasks tui
+# or
+uv run gtasks tui
+```
+
+### Testing
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test
+uv run pytest tests/unit/test_task_cache.py::test_function_name
+
+# Run with coverage
+uv run pytest --cov=gtasks_manager
+```
+
+### Code Quality
+
+```bash
+# Lint and format
+uv run ruff check .
+uv run ruff format .
+
+# Type checking (if mypy is configured)
+uv run mypy src/gtasks_manager
+```
+
+### Dependency Management
+
+```bash
+# Update dependencies and lock file
+uv lock --upgrade
+
+# Install dependencies from lock file
+uv sync
+```
 
 ## Commands
 
