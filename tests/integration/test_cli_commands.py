@@ -1,5 +1,3 @@
-
-
 # Note: We'll implement the actual CLI structure in T021
 # This is a placeholder to show we're following TDD
 def test_cli_auth_command():

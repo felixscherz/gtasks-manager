@@ -1,7 +1,7 @@
 # Google Tasks API Contract
 
-**Feature**: Google Tasks CLI and TUI Manager  
-**Branch**: `001-google-tasks-cli-tui`  
+**Feature**: Google Tasks CLI and TUI Manager
+**Branch**: `001-google-tasks-cli-tui`
 **Date**: 2026-01-07
 
 ## Purpose
@@ -12,10 +12,10 @@ This document defines the contract between the application and the Google Tasks 
 
 ## API Base Information
 
-**Base URL**: `https://tasks.googleapis.com`  
-**API Version**: `v1`  
-**Authentication**: OAuth 2.0  
-**Required Scope**: `https://www.googleapis.com/auth/tasks`  
+**Base URL**: `https://tasks.googleapis.com`
+**API Version**: `v1`
+**Authentication**: OAuth 2.0
+**Required Scope**: `https://www.googleapis.com/auth/tasks`
 **Rate Limit**: 50,000 queries/day (courtesy limit)
 
 ---
@@ -31,35 +31,35 @@ from core.models import Task, TaskList
 
 class TasksAPIProtocol(Protocol):
     """Protocol defining the Google Tasks API adapter interface."""
-    
+
     def authenticate(self, force_reauth: bool = False) -> bool:
         """
         Authenticate with Google Tasks API.
-        
+
         Args:
             force_reauth: Force re-authentication even if valid token exists
-            
+
         Returns:
             True if authentication successful
-            
+
         Raises:
             AuthenticationError: If authentication fails
         """
         ...
-    
+
     def list_task_lists(self) -> List[TaskList]:
         """
         Get all task lists for the authenticated user.
-        
+
         Returns:
             List of TaskList objects
-            
+
         Raises:
             APIError: If API request fails
             AuthenticationError: If not authenticated
         """
         ...
-    
+
     def list_tasks(
         self,
         list_id: str,
@@ -67,37 +67,37 @@ class TasksAPIProtocol(Protocol):
     ) -> List[Task]:
         """
         Get tasks from a specific task list.
-        
+
         Args:
             list_id: Task list identifier
             show_completed: Include completed tasks
-            
+
         Returns:
             List of Task objects
-            
+
         Raises:
             APIError: If API request fails
             NotFoundError: If task list doesn't exist
         """
         ...
-    
+
     def get_task(self, list_id: str, task_id: str) -> Task:
         """
         Get a specific task.
-        
+
         Args:
             list_id: Task list identifier
             task_id: Task identifier
-            
+
         Returns:
             Task object
-            
+
         Raises:
             APIError: If API request fails
             NotFoundError: If task doesn't exist
         """
         ...
-    
+
     def create_task(
         self,
         list_id: str,
@@ -107,22 +107,22 @@ class TasksAPIProtocol(Protocol):
     ) -> Task:
         """
         Create a new task.
-        
+
         Args:
             list_id: Task list identifier
             title: Task title (1-1024 chars)
             notes: Optional task notes (max 8192 chars)
             due: Optional due date
-            
+
         Returns:
             Created Task object
-            
+
         Raises:
             APIError: If API request fails
             ValidationError: If task data is invalid
         """
         ...
-    
+
     def update_task(
         self,
         list_id: str,
@@ -134,7 +134,7 @@ class TasksAPIProtocol(Protocol):
     ) -> Task:
         """
         Update an existing task.
-        
+
         Args:
             list_id: Task list identifier
             task_id: Task identifier
@@ -142,42 +142,42 @@ class TasksAPIProtocol(Protocol):
             notes: New notes (if updating)
             due: New due date (if updating)
             status: New status (if updating)
-            
+
         Returns:
             Updated Task object
-            
+
         Raises:
             APIError: If API request fails
             NotFoundError: If task doesn't exist
             ValidationError: If update data is invalid
         """
         ...
-    
+
     def delete_task(self, list_id: str, task_id: str) -> None:
         """
         Delete a task.
-        
+
         Args:
             list_id: Task list identifier
             task_id: Task identifier
-            
+
         Raises:
             APIError: If API request fails
             NotFoundError: If task doesn't exist
         """
         ...
-    
+
     def complete_task(self, list_id: str, task_id: str) -> Task:
         """
         Mark a task as completed.
-        
+
         Args:
             list_id: Task list identifier
             task_id: Task identifier
-            
+
         Returns:
             Updated Task object with completed status
-            
+
         Raises:
             APIError: If API request fails
             NotFoundError: If task doesn't exist
@@ -455,13 +455,13 @@ def calculate_backoff(attempt: int) -> float:
     import random
     base_delay = 1.0  # 1 second
     max_delay = 60.0  # 60 seconds
-    
+
     # Exponential: 1s, 2s, 4s, 8s, 16s, 32s, 60s (capped)
     delay = min(base_delay * (2 ** attempt), max_delay)
-    
+
     # Add jitter (±10%) to avoid thundering herd
     jitter = delay * 0.1 * random.uniform(-1, 1)
-    
+
     return delay + jitter
 ```
 
@@ -525,7 +525,7 @@ from google.auth.transport.requests import Request
 def authenticate(force_reauth: bool = False) -> UserCredentials:
     """
     Perform OAuth2 authentication flow.
-    
+
     Steps:
     1. Check for existing token in ~/.config/gtasks-manager/token.json
     2. If valid token exists and not force_reauth, use it
@@ -538,11 +538,11 @@ def authenticate(force_reauth: bool = False) -> UserCredentials:
             token_file,
             SCOPES
         )
-        
+
         # 2. Check validity
         if creds and creds.valid:
             return UserCredentials.from_google_creds(creds)
-        
+
         # 3. Try refresh
         if creds and creds.expired and creds.refresh_token:
             try:
@@ -552,7 +552,7 @@ def authenticate(force_reauth: bool = False) -> UserCredentials:
             except Exception:
                 # Refresh failed, need full reauth
                 pass
-    
+
     # 4. Full OAuth flow
     flow = InstalledAppFlow.from_client_config(
         CLIENT_CONFIG,
@@ -572,7 +572,7 @@ def _ensure_authenticated(self) -> None:
     """Ensure valid credentials before API call."""
     if not self.credentials:
         raise AuthenticationError("Not authenticated. Run 'gtasks auth'.")
-    
+
     if not self.credentials.is_valid():
         if self.credentials.needs_refresh():
             try:
@@ -598,7 +598,7 @@ def list_all_tasks(
     """Fetch all tasks with automatic pagination."""
     all_tasks = []
     page_token = None
-    
+
     while True:
         # Fetch page
         request = self.service.tasks().list(
@@ -608,21 +608,21 @@ def list_all_tasks(
             maxResults=100,  # Max per page
             pageToken=page_token
         )
-        
+
         response = self._execute_with_retry(request)
-        
+
         # Extract tasks
         items = response.get('items', [])
         all_tasks.extend([
             GoogleTaskDTO(**item).to_domain(list_id)
             for item in items
         ])
-        
+
         # Check for more pages
         page_token = response.get('nextPageToken')
         if not page_token:
             break
-    
+
     return all_tasks
 ```
 
@@ -651,10 +651,10 @@ def check_connectivity() -> bool:
 
 ## Summary
 
-**Operations**: 7 (list lists, list tasks, get task, create, update, delete, complete)  
-**Authentication**: OAuth2 with automatic token refresh  
-**Error Handling**: Exponential backoff for transient errors  
-**Pagination**: Automatic handling for large result sets  
+**Operations**: 7 (list lists, list tasks, get task, create, update, delete, complete)
+**Authentication**: OAuth2 with automatic token refresh
+**Error Handling**: Exponential backoff for transient errors
+**Pagination**: Automatic handling for large result sets
 **Rate Limits**: 50,000 queries/day with retry on 429
 
 **Adapter Responsibilities**:

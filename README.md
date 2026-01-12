@@ -157,7 +157,7 @@ gtasks list --completed    # Show all tasks including completed
 # Complete/delete tasks using either number or ID
 gtasks complete 1          # Complete task #1 from list
 gtasks complete abc123def  # Complete by task ID
-gtasks delete 2            # Delete task #2 from list  
+gtasks delete 2            # Delete task #2 from list
 gtasks delete xyz789uvw    # Delete by task ID
 
 # View task lists

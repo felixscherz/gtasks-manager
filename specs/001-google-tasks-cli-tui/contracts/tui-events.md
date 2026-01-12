@@ -1,7 +1,7 @@
 # TUI Events Contract
 
-**Feature**: Google Tasks CLI and TUI Manager  
-**Branch**: `001-google-tasks-cli-tui`  
+**Feature**: Google Tasks CLI and TUI Manager
+**Branch**: `001-google-tasks-cli-tui`
 **Date**: 2026-01-07
 
 ## Purpose
@@ -91,7 +91,7 @@ from textual.message import Message
 
 class TaskSelected(Message):
     """A task was selected."""
-    
+
     def __init__(self, task_id: str, task_title: str) -> None:
         self.task_id = task_id
         self.task_title = task_title
@@ -116,7 +116,7 @@ Emitted when a task is marked complete.
 ```python
 class TaskCompleted(Message):
     """A task was marked as completed."""
-    
+
     def __init__(self, task_id: str) -> None:
         self.task_id = task_id
         super().__init__()
@@ -142,7 +142,7 @@ Emitted when a task is deleted.
 ```python
 class TaskDeleted(Message):
     """A task was deleted."""
-    
+
     def __init__(self, task_id: str) -> None:
         self.task_id = task_id
         super().__init__()
@@ -155,7 +155,7 @@ Emitted when a new task is created.
 ```python
 class TaskCreated(Message):
     """A new task was created."""
-    
+
     def __init__(self, title: str, notes: Optional[str] = None, due: Optional[datetime] = None) -> None:
         self.title = title
         self.notes = notes
@@ -170,7 +170,7 @@ Emitted when a task is updated.
 ```python
 class TaskUpdated(Message):
     """A task was updated."""
-    
+
     def __init__(self, task_id: str, updates: dict) -> None:
         self.task_id = task_id
         self.updates = updates
@@ -184,7 +184,7 @@ Emitted when user requests data refresh from API.
 ```python
 class RefreshRequested(Message):
     """User requested data refresh."""
-    
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -201,7 +201,7 @@ Emitted when an error occurs that should be shown to the user.
 ```python
 class ErrorOccurred(Message):
     """An error occurred."""
-    
+
     def __init__(self, error_message: str, error_type: str = "error") -> None:
         self.error_message = error_message
         self.error_type = error_type  # "error", "warning", "info"
@@ -224,27 +224,27 @@ from textual.reactive import reactive
 
 class TasksApp(App):
     """Main TUI application."""
-    
+
     # Reactive state - UI auto-updates when these change
     tasks = reactive(list, init=False)
     selected_task_index = reactive(0)
     loading = reactive(False)
     current_list_id = reactive("")
     current_list_name = reactive("My Tasks")
-    
+
     def watch_tasks(self, old_value: list, new_value: list) -> None:
         """Called automatically when tasks change."""
         # Update task list widget
         task_list = self.query_one("#task-list", TaskListWidget)
         task_list.update_tasks(new_value)
-    
+
     def watch_loading(self, old_value: bool, new_value: bool) -> None:
         """Called when loading state changes."""
         if new_value:
             self.query_one("#loading-indicator").display = True
         else:
             self.query_one("#loading-indicator").display = False
-    
+
     def watch_selected_task_index(self, old_value: int, new_value: int) -> None:
         """Called when selection changes."""
         task_list = self.query_one("#task-list", TaskListWidget)
@@ -279,7 +279,7 @@ class TasksApp(App):
             self.tasks = tasks  # Triggers watch_tasks()
         except APIError as e:
             self.post_message(ErrorOccurred(str(e)))
-    
+
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Handle worker state changes."""
         if event.worker.name == "load_tasks":
@@ -333,7 +333,7 @@ class TasksApp(App):
         """Update both task list and detail panel."""
         task_list = self.query_one("#task-list")
         detail_panel = self.query_one("#detail-panel")
-        
+
         task_list.highlight_task(message.task_id)
         detail_panel.show_task(message.task_id)
 ```
@@ -347,11 +347,11 @@ from textual.screen import Screen
 
 class HelpScreen(Screen):
     """Help screen."""
-    
+
     BINDINGS = [
         ("escape", "dismiss", "Close"),
     ]
-    
+
     def action_dismiss(self) -> None:
         """Close help screen."""
         self.app.pop_screen()
@@ -371,7 +371,7 @@ async def action_show_help(self) -> None:
 ```python
 class NetworkError(Message):
     """Network connectivity lost."""
-    
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -390,7 +390,7 @@ async def on_network_error(self, message: NetworkError) -> None:
 ```python
 class AuthenticationError(Message):
     """Authentication failed or token expired."""
-    
+
     def __init__(self, reason: str) -> None:
         self.reason = reason
         super().__init__()
@@ -425,7 +425,7 @@ class TasksApp(App):
     async def on_task_completed(self, message: TaskCompleted) -> None:
         # 4. Update UI state
         self.loading = True  # Triggers watch_loading()
-        
+
         try:
             # 5. Call API via worker
             await self.complete_task_worker(message.task_id)
@@ -435,16 +435,16 @@ class TasksApp(App):
         finally:
             # 7. Update UI state
             self.loading = False
-    
+
     @work
     async def complete_task_worker(self, task_id: str) -> None:
         """Complete task (background)."""
         # API call
         await self.api.complete_task(self.current_list_id, task_id)
-        
+
         # 8. Refresh task list
         await self.load_tasks()  # Updates self.tasks, triggers watch_tasks()
-        
+
         # 9. Show success notification
         self.notify("Task completed!", severity="success")
 ```
@@ -474,7 +474,7 @@ from textual.binding import Binding
 
 class TasksApp(App):
     """Main TUI application."""
-    
+
     BINDINGS = [
         Binding("j", "move_down", "Down", show=False),
         Binding("k", "move_up", "Up", show=False),
@@ -487,16 +487,16 @@ class TasksApp(App):
         Binding("?", "help", "Help"),
         Binding("q", "quit", "Quit"),
     ]
-    
+
     def action_move_down(self) -> None:
         """Move selection down."""
         max_index = len(self.tasks) - 1
         self.selected_task_index = min(self.selected_task_index + 1, max_index)
-    
+
     def action_move_up(self) -> None:
         """Move selection up."""
         self.selected_task_index = max(self.selected_task_index - 1, 0)
-    
+
     async def action_refresh(self) -> None:
         """Refresh tasks from API."""
         await self.load_tasks()

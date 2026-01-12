@@ -1,8 +1,8 @@
 # Feature Specification: Add VIM keybindings
 
-**Feature Branch**: `002-add-vim-keybindings`  
-**Created**: 2026-01-08  
-**Status**: Draft  
+**Feature Branch**: `002-add-vim-keybindings`
+**Created**: 2026-01-08
+**Status**: Draft
 **Input**: User description: "Key bindings should follow VIM conventions: hjkl to move left, down, up, right respectively, enter to toggle the tasks as done / not done."
 
 ## User Scenarios & Testing *(mandatory)*

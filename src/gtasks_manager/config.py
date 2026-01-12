@@ -5,7 +5,7 @@ CONFIG_DIR = HOME_DIR / ".config" / "gtasks-manager"
 TOKEN_FILE = CONFIG_DIR / "token.json"
 TASK_CACHE_FILE = CONFIG_DIR / "task_cache.json"
 
-SCOPES = ['https://www.googleapis.com/auth/tasks']
+SCOPES = ["https://www.googleapis.com/auth/tasks"]
 
 CLIENT_CONFIG = {
     "installed": {
@@ -17,9 +17,10 @@ CLIENT_CONFIG = {
         "redirect_uris": ["http://localhost"],
         # not treated as an actual secret here,
         # see: https://developers.google.com/identity/protocols/oauth2#installed
-        "client_secret": "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"
+        "client_secret": "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",
     }
 }
+
 
 def ensure_config_dir():
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)

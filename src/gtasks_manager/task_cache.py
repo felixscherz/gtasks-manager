@@ -14,15 +14,15 @@ class TaskCache:
 
         for i, task in enumerate(tasks, 1):
             task_map[str(i)] = {
-                'id': task['id'],
-                'title': task.get('title', 'Untitled'),
-                'status': task.get('status', 'needsAction')
+                "id": task["id"],
+                "title": task.get("title", "Untitled"),
+                "status": task.get("status", "needsAction"),
             }
 
         self.cache[cache_key] = task_map
 
         try:
-            with open(TASK_CACHE_FILE, 'w') as f:
+            with open(TASK_CACHE_FILE, "w") as f:
                 json.dump(self.cache, f)
         except Exception:
             pass
@@ -39,10 +39,10 @@ class TaskCache:
         task_map = self.cache.get(cache_key, {})
 
         if reference in task_map:
-            return task_map[reference]['id']
+            return task_map[reference]["id"]
 
         for task_info in task_map.values():
-            if task_info['id'] == reference:
+            if task_info["id"] == reference:
                 return reference
 
         return None

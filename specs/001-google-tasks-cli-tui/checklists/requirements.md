@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Google Tasks CLI and TUI Manager
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning  
-**Created**: 2026-01-07  
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-01-07
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

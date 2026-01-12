@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Add VIM keybindings
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning  
-**Created**: 2026-01-08  
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-01-08
 **Feature**: ../spec.md
 
 ## Content Quality

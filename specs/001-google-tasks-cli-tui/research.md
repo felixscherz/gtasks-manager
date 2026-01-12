@@ -1,7 +1,7 @@
 # Research & Technical Decisions
 
-**Feature**: Google Tasks CLI and TUI Manager  
-**Branch**: `001-google-tasks-cli-tui`  
+**Feature**: Google Tasks CLI and TUI Manager
+**Branch**: `001-google-tasks-cli-tui`
 **Date**: 2026-01-07
 
 ## Purpose
@@ -30,7 +30,7 @@ Need to understand best practices for building production-ready Textual TUI appl
 # Reactive state management
 class TaskListView(Static):
     tasks = reactive(list)  # Auto-updates UI when modified
-    
+
     def watch_tasks(self, old_value, new_value):
         """Called automatically when tasks change."""
         self.refresh()
@@ -145,14 +145,14 @@ def execute_with_retry(request, max_retries=3):
             return request.execute()
         except HttpError as error:
             status = error.resp.status
-            
+
             # Don't retry client errors (except rate limit)
             if 400 <= status < 500 and status != 429:
                 raise
-            
+
             if attempt == max_retries:
                 raise
-            
+
             # Exponential backoff: 1s, 2s, 4s...
             wait = (2 ** attempt) + (random.random() * 0.1)
             time.sleep(wait)
@@ -204,10 +204,10 @@ Need to achieve 90%+ test coverage for both CLI (Click) and TUI (Textual) interf
 ```
         E2E (10%)
     CLI + TUI full flows
-        
+
     Integration (20%)
   VCR recorded responses
-      
+
         Unit (70%)
    Fast, isolated, mocked
 ```
@@ -226,12 +226,12 @@ Need to achieve 90%+ test coverage for both CLI (Click) and TUI (Textual) interf
 def test_create_task(mocker):
     mock_service = mocker.MagicMock()
     mocker.patch('gtasks_manager.tasks.build', return_value=mock_service)
-    
+
     mock_service.tasks().insert().execute.return_value = {
         'id': 'task123',
         'title': 'Buy milk'
     }
-    
+
     manager = TasksManager()
     result = manager.create_task('Buy milk')
     assert result['id'] == 'task123'
@@ -362,7 +362,7 @@ class GoogleTask(BaseModel):
     status: str
     notes: Optional[str] = None
     due: Optional[str] = None
-    
+
     def to_domain(self) -> Task:
         """Convert to domain model."""
         return Task(
@@ -384,7 +384,7 @@ def create_task(
     # Business validation
     if not title or len(title) > 1024:
         raise InvalidTaskError("Title must be 1-1024 characters")
-    
+
     # Delegate to adapter
     task_data = api_adapter.create_task(title, notes, due)
     return task_data
@@ -395,7 +395,7 @@ def create_task(
 def create(title: str):
     """Create a new task."""
     from gtasks_manager.bootstrap import get_api_adapter
-    
+
     adapter = get_api_adapter()
     task = create_task(title, adapter)
     click.echo(f"Created: {task.title}")
@@ -405,7 +405,7 @@ class TasksApp(App):
     async def on_button_pressed(self, event):
         """Handle create button."""
         from gtasks_manager.bootstrap import get_api_adapter
-        
+
         adapter = get_api_adapter()
         task = create_task(self.input_text, adapter)
         self.tasks.append(task)
@@ -428,7 +428,7 @@ class TasksApp(App):
 # CLI framework
 click = ">=8.0.0"
 
-# TUI framework  
+# TUI framework
 textual = ">=0.47.0"
 
 # Google API
@@ -451,18 +451,18 @@ dev = [
     "pytest-mock>=3.11.0",
     "pytest-cov>=4.1.0",
     "pytest-xdist>=3.3.0",
-    
+
     # Test data
     "factory-boy>=3.3.0",
     "faker>=19.0.0",
-    
+
     # Integration testing
     "vcrpy>=5.1.0",
     "pytest-recording>=0.13.0",
-    
+
     # TUI testing
     "pytest-textual-snapshot>=0.4.0",
-    
+
     # Development
     "pytest-watch>=4.2.0",
     "pytest-sugar>=0.9.7",
@@ -509,7 +509,7 @@ dev = [
 ## Risk Mitigation
 
 ### Risk 1: Textual Framework Learning Curve
-**Mitigation**: 
+**Mitigation**:
 - Comprehensive guide created (`docs/textual-framework-guide.md`)
 - Start with simple widgets, iterate to complex
 - Use official examples as reference
@@ -547,6 +547,6 @@ dev = [
 
 ---
 
-**Research Status**: ✅ Complete  
-**Decisions**: 4/4 made  
+**Research Status**: ✅ Complete
+**Decisions**: 4/4 made
 **Ready for**: Phase 1 (Design & Contracts)

@@ -1,7 +1,7 @@
 # Textual Framework Comprehensive Guide
 
-**Version:** Textual 0.47+  
-**Date:** January 2026  
+**Version:** Textual 0.47+
+**Date:** January 2026
 **Purpose:** Practical reference for building Textual TUI applications
 
 ---
@@ -31,12 +31,12 @@ from textual.app import App
 
 class MyApp(App):
     """Main application class."""
-    
+
     def on_mount(self) -> None:
         """Called when app is mounted and ready."""
         self.title = "My Application"
         self.sub_title = "A Textual App"
-    
+
     async def on_key(self, event: events.Key) -> None:
         """Handle key press events."""
         if event.key == "q":
@@ -86,20 +86,20 @@ Workers allow you to run background tasks without blocking the UI.
 from textual.worker import work
 
 class MyApp(App):
-    
+
     @work(exclusive=True)  # Cancel previous workers
     async def fetch_data(self) -> str:
         """Background task using async."""
         async with httpx.AsyncClient() as client:
             response = await client.get("https://api.example.com/data")
             return response.json()
-    
+
     @work(thread=True)  # Run in separate thread
     def process_file(self, filepath: str) -> dict:
         """CPU-bound task in thread (can use blocking I/O)."""
         with open(filepath) as f:
             return json.load(f)
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         # Start worker and get Worker object
         worker = self.fetch_data()
@@ -118,16 +118,16 @@ class MyApp(App):
 
 ```python
 class MyApp(App):
-    
+
     @work
     async def fetch_data(self) -> dict:
         # ... fetch data
         return {"key": "value"}
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         worker = self.fetch_data()
         worker.result_callback = self.handle_result
-    
+
     def handle_result(self, result: dict) -> None:
         """Called when worker completes successfully."""
         self.query_one("#output").update(str(result))
@@ -163,20 +163,20 @@ Textual uses message passing for all events:
 from textual.message import Message
 
 class MyWidget(Widget):
-    
+
     class DataLoaded(Message):
         """Custom message when data is loaded."""
         def __init__(self, data: dict) -> None:
             super().__init__()
             self.data = data
-    
+
     async def load_data(self) -> None:
         data = await fetch_data()
         # Post message to parent
         self.post_message(self.DataLoaded(data))
 
 class MyApp(App):
-    
+
     def on_my_widget_data_loaded(self, event: MyWidget.DataLoaded) -> None:
         """Handle custom message (auto-discovered by naming convention)."""
         self.log(f"Loaded: {event.data}")
@@ -194,15 +194,15 @@ Handler methods are auto-discovered by naming:
 from textual.on import on
 
 class MyApp(App):
-    
+
     # Handle all key presses
     def on_key(self, event: events.Key) -> None:
         pass
-    
+
     # Handle button presses from any Button
     def on_button_pressed(self, event: Button.Pressed) -> None:
         pass
-    
+
     # Handle only buttons matching selector
     @on(Button.Pressed, "#submit-button")
     def handle_submit(self, event: Button.Pressed) -> None:
@@ -237,7 +237,7 @@ from textual.widgets import Header, Footer, Button, Static
 from textual.containers import Container, Vertical, Horizontal
 
 class MyApp(App):
-    
+
     def compose(self) -> ComposeResult:
         """Called once during mount to get initial widgets."""
         yield Header()
@@ -264,17 +264,17 @@ For adding widgets after initial composition:
 
 ```python
 class MyApp(App):
-    
+
     def compose(self) -> ComposeResult:
         yield Container(id="task-list")
-    
+
     async def on_mount(self) -> None:
         """Add tasks dynamically."""
         container = self.query_one("#task-list")
         for i in range(10):
             # mount() returns awaitable
             await container.mount(Static(f"Task {i}"))
-    
+
     async def add_task(self, title: str) -> None:
         """Add task at runtime."""
         container = self.query_one("#task-list")
@@ -314,26 +314,26 @@ from textual.screen import Screen
 
 class MainScreen(Screen):
     """Main application screen."""
-    
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Main Screen")
         yield Button("Open Settings", id="settings-btn")
         yield Footer()
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "settings-btn":
             self.app.push_screen(SettingsScreen())
 
 class SettingsScreen(Screen):
     """Settings screen."""
-    
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Settings")
         yield Button("Back", id="back-btn")
         yield Footer()
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "back-btn":
             self.app.pop_screen()
@@ -343,20 +343,20 @@ class SettingsScreen(Screen):
 
 ```python
 class MyApp(App):
-    
+
     def on_mount(self) -> None:
         # Push screen onto stack (current screen remains underneath)
         self.push_screen(MainScreen())
-        
+
         # Push and get result when screen exits
         self.push_screen(DialogScreen(), callback=self.handle_dialog_result)
-        
+
         # Pop current screen (go back)
         self.pop_screen()
-        
+
         # Switch screen (replace current)
         self.switch_screen(MainScreen())
-        
+
         # Install screen without showing it
         self.install_screen(SettingsScreen(), name="settings")
         # Later: show by name
@@ -372,7 +372,7 @@ from textual.screen import ModalScreen
 
 class ConfirmDialog(ModalScreen[bool]):
     """Modal dialog that returns bool."""
-    
+
     def compose(self) -> ComposeResult:
         yield Container(
             Static("Are you sure?"),
@@ -382,7 +382,7 @@ class ConfirmDialog(ModalScreen[bool]):
             ),
             id="dialog",
         )
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "yes":
             self.dismiss(True)  # Return True
@@ -391,7 +391,7 @@ class ConfirmDialog(ModalScreen[bool]):
 
 # Usage
 class MyApp(App):
-    
+
     async def confirm_action(self) -> None:
         result = await self.push_screen_wait(ConfirmDialog())
         if result:
@@ -410,17 +410,17 @@ Modes allow switching between different screen stacks (like tabs):
 
 ```python
 class MyApp(App):
-    
+
     MODES = {
         "tasks": MainScreen,
         "settings": SettingsScreen,
         "help": HelpScreen,
     }
-    
+
     def on_mount(self) -> None:
         # Start in tasks mode
         self.switch_mode("tasks")
-    
+
     def on_key(self, event: events.Key) -> None:
         if event.key == "f1":
             self.switch_mode("help")
@@ -510,13 +510,13 @@ from textual.widgets import Static
 
 class Counter(Static):
     """Widget that displays a count."""
-    
+
     count = reactive(0)  # Reactive attribute with default value
-    
+
     def render(self) -> str:
         """Called automatically when count changes."""
         return f"Count: {self.count}"
-    
+
     def increment(self) -> None:
         self.count += 1  # Triggers refresh automatically
 ```
@@ -533,15 +533,15 @@ React to changes with custom logic:
 
 ```python
 class TaskList(Static):
-    
+
     tasks = reactive(list)  # Use factory for mutable defaults
     selected_index = reactive(0)
-    
+
     def watch_selected_index(self, old_value: int, new_value: int) -> None:
         """Called when selected_index changes."""
         self.log(f"Selection changed from {old_value} to {new_value}")
         self.scroll_to_index(new_value)
-    
+
     def watch_tasks(self, old_tasks: list, new_tasks: list) -> None:
         """Called when tasks list changes."""
         self.log(f"Tasks updated: {len(old_tasks)} -> {len(new_tasks)}")
@@ -560,9 +560,9 @@ Validate and transform values before assignment:
 
 ```python
 class ProgressBar(Static):
-    
+
     progress = reactive(0)
-    
+
     def validate_progress(self, value: int) -> int:
         """Ensure progress is between 0 and 100."""
         if value < 0:
@@ -570,7 +570,7 @@ class ProgressBar(Static):
         if value > 100:
             return 100
         return value
-    
+
     def set_progress(self, value: int) -> None:
         self.progress = value  # Will be clamped by validator
 ```
@@ -588,15 +588,15 @@ Derive values from other reactive attributes:
 
 ```python
 class TaskWidget(Static):
-    
+
     title = reactive("")
     completed = reactive(False)
-    
+
     def compute_display_text(self) -> str:
         """Computed from title and completed."""
         prefix = "[X]" if self.completed else "[ ]"
         return f"{prefix} {self.title}"
-    
+
     def render(self) -> str:
         return self.display_text  # Auto-computed
 ```
@@ -618,16 +618,16 @@ Control reactive behavior:
 from textual.reactive import reactive
 
 class MyWidget(Static):
-    
+
     # Trigger layout recalculation when changed
     width_percent = reactive(50, layout=True)
-    
+
     # Don't trigger any refresh (for internal state)
     internal_flag = reactive(False, recompose=False)
-    
+
     # Trigger full recompose (re-call compose())
     mode = reactive("view", recompose=True)
-    
+
     # Initialize with different value
     count = reactive(0, init=False)  # Don't set during __init__
 ```
@@ -645,13 +645,13 @@ When you need reactive behavior without automatic refresh:
 from textual.reactive import var
 
 class MyWidget(Static):
-    
+
     # Regular reactive - triggers refresh
     count = reactive(0)
-    
+
     # var - can watch/validate but no refresh
     internal_state = var("idle")
-    
+
     def watch_internal_state(self, old: str, new: str) -> None:
         """Still get watch callbacks."""
         self.log(f"State: {old} -> {new}")
@@ -694,19 +694,19 @@ class Slider(Widget):
 
 class Display(Widget):
     value = reactive(0)
-    
+
     def render(self) -> str:
         return f"Value: {self.value}"
 
 class MyApp(App):
-    
+
     def compose(self) -> ComposeResult:
         slider = Slider()
         display = Display()
-        
+
         # Bind slider.value to display.value
         display.data_bind(Slider.value, "value")
-        
+
         yield slider
         yield display
 ```
@@ -720,10 +720,10 @@ Now changing `slider.value` automatically updates `display.value`.
 ```python
 class TaskItem(Static):
     """Self-contained task with own state."""
-    
+
     title = reactive("")
     completed = reactive(False)
-    
+
     def toggle(self) -> None:
         self.completed = not self.completed
 ```
@@ -733,13 +733,13 @@ class TaskItem(Static):
 ```python
 class MyApp(App):
     """App holds shared state."""
-    
+
     tasks = reactive(list, layout=True)
     selected_task_id = reactive(None)
-    
+
     def add_task(self, title: str) -> None:
         self.tasks = self.tasks + [{"id": uuid4(), "title": title}]
-    
+
     def watch_tasks(self, old_tasks: list, new_tasks: list) -> None:
         """Update all task widgets when tasks change."""
         container = self.query_one("#task-list")
@@ -750,14 +750,14 @@ class MyApp(App):
 
 ```python
 class TaskList(Widget):
-    
+
     class TaskCompleted(Message):
         def __init__(self, task_id: str) -> None:
             super().__init__()
             self.task_id = task_id
-    
+
     tasks = reactive(list)
-    
+
     def mark_complete(self, task_id: str) -> None:
         # Update local state
         self.tasks = [
@@ -768,7 +768,7 @@ class TaskList(Widget):
         self.post_message(self.TaskCompleted(task_id))
 
 class MyApp(App):
-    
+
     def on_task_list_task_completed(self, event: TaskList.TaskCompleted) -> None:
         """Handle completion in app state."""
         self.save_task_completion(event.task_id)
@@ -803,11 +803,11 @@ from textual.app import App
 from textual.widgets import Button, Static
 
 class MyApp(App):
-    
+
     def compose(self) -> ComposeResult:
         yield Static("Click the button", id="message")
         yield Button("Click Me", id="click-btn")
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.query_one("#message", Static).update("Button clicked!")
 
@@ -816,17 +816,17 @@ class MyApp(App):
 async def test_button_click():
     """Test that clicking button updates message."""
     app = MyApp()
-    
+
     async with app.run_test() as pilot:
         # App is now running in test mode
-        
+
         # Check initial state
         message = app.query_one("#message", Static)
         assert message.renderable == "Click the button"
-        
+
         # Simulate button click
         await pilot.click("#click-btn")
-        
+
         # Check updated state
         assert message.renderable == "Button clicked!"
 ```
@@ -844,27 +844,27 @@ The `Pilot` simulates user interactions:
 ```python
 async def test_keyboard_navigation():
     app = MyApp()
-    
+
     async with app.run_test() as pilot:
         # Press keys
         await pilot.press("tab")  # Single key
         await pilot.press("enter")
         await pilot.press("ctrl+c")  # Key combinations
-        
+
         # Type text (series of key presses)
         await pilot.type("Hello, world!")
-        
+
         # Click widgets
         await pilot.click("#my-button")  # By selector
         await pilot.click(Button, "#submit")  # Type + selector
-        
+
         # Mouse hover
         await pilot.hover("#my-widget")
-        
+
         # Pause to let async operations complete
         await pilot.pause()
         await pilot.pause(0.5)  # Pause for 0.5 seconds
-        
+
         # Wait for specific widget
         await pilot.wait_for_scheduled_animations()
 ```
@@ -875,27 +875,27 @@ When testing widgets with workers or async operations:
 
 ```python
 class DataApp(App):
-    
+
     @work
     async def load_data(self) -> None:
         # Simulate async data loading
         await asyncio.sleep(0.1)
         self.query_one("#status", Static).update("Data loaded")
-    
+
     def on_mount(self) -> None:
         self.load_data()
 
 async def test_async_data_loading():
     app = DataApp()
-    
+
     async with app.run_test() as pilot:
         # Initial state
         status = app.query_one("#status", Static)
         assert status.renderable != "Data loaded"
-        
+
         # Wait for async operation
         await pilot.pause(0.2)  # Wait longer than sleep
-        
+
         # Check loaded state
         assert status.renderable == "Data loaded"
 ```
@@ -915,7 +915,7 @@ Textual supports visual regression testing with snapshots:
 def test_app_appearance(snap_compare):
     """Test that app looks correct."""
     app = MyApp()
-    
+
     # Compare against stored SVG snapshot
     assert snap_compare(app)
 ```
@@ -937,19 +937,19 @@ def test_app_appearance(snap_compare):
 async def test_reactive_state():
     """Test reactive attribute updates."""
     app = CounterApp()
-    
+
     async with app.run_test() as pilot:
         counter = app.query_one(Counter)
-        
+
         # Check initial state
         assert counter.count == 0
-        
+
         # Trigger increment
         await pilot.click("#increment-btn")
-        
+
         # Check state updated
         assert counter.count == 1
-        
+
         # Check UI reflects state
         assert "Count: 1" in counter.render()
 ```
@@ -960,22 +960,22 @@ async def test_reactive_state():
 async def test_screen_navigation():
     """Test pushing and popping screens."""
     app = MyApp()
-    
+
     async with app.run_test() as pilot:
         # Check initial screen
         assert isinstance(app.screen, MainScreen)
-        
+
         # Navigate to settings
         await pilot.click("#settings-btn")
         await pilot.pause()  # Let screen push complete
-        
+
         # Check settings screen active
         assert isinstance(app.screen, SettingsScreen)
-        
+
         # Navigate back
         await pilot.press("escape")  # Or click back button
         await pilot.pause()
-        
+
         # Check back on main screen
         assert isinstance(app.screen, MainScreen)
 ```
@@ -986,22 +986,22 @@ async def test_screen_navigation():
 async def test_modal_dialog():
     """Test modal dialog interaction."""
     app = MyApp()
-    
+
     async with app.run_test() as pilot:
         # Trigger dialog
         await pilot.click("#delete-btn")
         await pilot.pause()
-        
+
         # Check modal is showing
         assert isinstance(app.screen, ConfirmDialog)
-        
+
         # Click yes
         await pilot.click("#yes-btn")
         await pilot.pause()
-        
+
         # Check dialog dismissed
         assert not isinstance(app.screen, ConfirmDialog)
-        
+
         # Check action was performed
         assert len(app.tasks) == 0
 ```
@@ -1012,17 +1012,17 @@ async def test_modal_dialog():
 async def test_error_handling():
     """Test app handles errors gracefully."""
     app = MyApp()
-    
+
     async with app.run_test() as pilot:
         # Trigger error condition
         await pilot.click("#load-invalid-data")
         await pilot.pause()
-        
+
         # Check error message shown
         error_msg = app.query_one("#error-message")
         assert error_msg.has_class("error")
         assert "Invalid data" in error_msg.renderable
-        
+
         # Check app still responsive
         await pilot.press("escape")
         assert error_msg not in app.query("*")
@@ -1036,18 +1036,18 @@ from unittest.mock import AsyncMock, patch
 async def test_with_mocked_api():
     """Test with mocked external API."""
     app = MyApp()
-    
+
     # Mock the API call
     with patch.object(app, 'fetch_data', new_callable=AsyncMock) as mock_fetch:
         mock_fetch.return_value = {"tasks": [{"title": "Test"}]}
-        
+
         async with app.run_test() as pilot:
             await pilot.click("#refresh-btn")
             await pilot.pause()
-            
+
             # Check mock was called
             mock_fetch.assert_called_once()
-            
+
             # Check data displayed
             task_list = app.query_one("#task-list")
             assert "Test" in str(task_list.renderable)
@@ -1070,7 +1070,7 @@ async def app_pilot():
 async def test_with_fixture(app_pilot):
     """Test using fixture."""
     app, pilot = app_pilot
-    
+
     await pilot.click("#my-button")
     assert app.query_one("#status").renderable == "Clicked"
 ```
@@ -1104,7 +1104,7 @@ Workers have built-in error handling:
 from textual.worker import work
 
 class MyApp(App):
-    
+
     @work(exit_on_error=False)  # Don't crash app on error
     async def risky_operation(self) -> dict:
         """Worker that might fail."""
@@ -1114,19 +1114,19 @@ class MyApp(App):
         except APIError as e:
             self.log.error(f"API error: {e}")
             return {"error": str(e)}
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         worker = self.risky_operation()
         worker.result_callback = self.handle_result
         worker.error_callback = self.handle_error
-    
+
     def handle_result(self, result: dict) -> None:
         """Called on success."""
         if "error" in result:
             self.show_error(result["error"])
         else:
             self.show_data(result)
-    
+
     def handle_error(self, error: Exception) -> None:
         """Called if worker raises unhandled exception."""
         self.log.error(f"Worker failed: {error}")
@@ -1144,7 +1144,7 @@ Wrap event handlers in try/except:
 
 ```python
 class MyApp(App):
-    
+
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press with error handling."""
         try:
@@ -1176,13 +1176,13 @@ Use messages to communicate errors:
 from textual.message import Message
 
 class TaskWidget(Widget):
-    
+
     class LoadFailed(Message):
         """Posted when task loading fails."""
         def __init__(self, error: str) -> None:
             super().__init__()
             self.error = error
-    
+
     async def load_task(self, task_id: str) -> None:
         try:
             task = await fetch_task(task_id)
@@ -1192,7 +1192,7 @@ class TaskWidget(Widget):
             self.post_message(self.LoadFailed(str(e)))
 
 class MyApp(App):
-    
+
     def on_task_widget_load_failed(self, event: TaskWidget.LoadFailed) -> None:
         """Handle task loading errors."""
         self.query_one("#error-display").update(
@@ -1206,7 +1206,7 @@ Control event propagation:
 
 ```python
 class CustomButton(Button):
-    
+
     def on_click(self, event: events.Click) -> None:
         """Handle click locally."""
         if not self.disabled:
@@ -1216,7 +1216,7 @@ class CustomButton(Button):
             event.stop()
 
 class Container(Widget):
-    
+
     def on_click(self, event: events.Click) -> None:
         """Only called if child didn't stop propagation."""
         self.log("Container clicked")
@@ -1232,9 +1232,9 @@ Reactive validation can raise errors:
 
 ```python
 class TaskInput(Widget):
-    
+
     task_title = reactive("")
-    
+
     def validate_task_title(self, value: str) -> str:
         """Validate task title."""
         if not value.strip():
@@ -1242,7 +1242,7 @@ class TaskInput(Widget):
         if len(value) > 100:
             raise ValueError("Task title too long (max 100 chars)")
         return value.strip()
-    
+
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle input submission."""
         try:
@@ -1260,13 +1260,13 @@ Handle uncaught exceptions in the app:
 
 ```python
 class MyApp(App):
-    
+
     def on_mount(self) -> None:
         """Set up global error handler."""
         # Python's exception hook doesn't work in Textual
         # Instead, use try/except in key methods
         pass
-    
+
     async def action_quit(self) -> None:
         """Quit action with cleanup."""
         try:
@@ -1286,46 +1286,46 @@ Common patterns for showing errors:
 ```python
 # Pattern 1: Dedicated error widget
 class MyApp(App):
-    
+
     def compose(self) -> ComposeResult:
         yield Static("", id="error-display", classes="error hidden")
         # ... other widgets
-    
+
     def show_error(self, message: str) -> None:
         """Display error message."""
         error_widget = self.query_one("#error-display")
         error_widget.update(f"Error: {message}")
         error_widget.remove_class("hidden")
-        
+
         # Auto-hide after 5 seconds
         self.set_timer(5.0, lambda: error_widget.add_class("hidden"))
 
 # Pattern 2: Modal error dialog
 class ErrorDialog(ModalScreen):
-    
+
     def __init__(self, message: str) -> None:
         super().__init__()
         self.message = message
-    
+
     def compose(self) -> ComposeResult:
         yield Container(
             Static(f"Error: {self.message}", id="error-msg"),
             Button("OK", id="ok"),
             id="error-dialog",
         )
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.dismiss()
 
 class MyApp(App):
-    
+
     def show_error(self, message: str) -> None:
         """Show error in modal dialog."""
         self.push_screen(ErrorDialog(message))
 
 # Pattern 3: Toast notification
 class MyApp(App):
-    
+
     def show_error(self, message: str) -> None:
         """Show error notification."""
         self.notify(message, severity="error", timeout=5)
@@ -1337,9 +1337,9 @@ Implement retry for transient failures:
 
 ```python
 class MyApp(App):
-    
+
     async def fetch_with_retry(
-        self, 
+        self,
         max_retries: int = 3,
         delay: float = 1.0
     ) -> dict:
@@ -1363,10 +1363,10 @@ Continue functioning with reduced features:
 
 ```python
 class MyApp(App):
-    
+
     cache_available = reactive(True)
     network_available = reactive(True)
-    
+
     async def on_mount(self) -> None:
         """Initialize with feature detection."""
         try:
@@ -1374,13 +1374,13 @@ class MyApp(App):
         except Exception as e:
             self.log.error(f"Cache unavailable: {e}")
             self.cache_available = False
-        
+
         try:
             await self.check_network()
         except Exception as e:
             self.log.error(f"Network unavailable: {e}")
             self.network_available = False
-    
+
     async def save_task(self, task: dict) -> None:
         """Save task with fallbacks."""
         # Try network first
@@ -1393,7 +1393,7 @@ class MyApp(App):
             except NetworkError:
                 self.network_available = False
                 self.show_error("Network unavailable, saving locally")
-        
+
         # Fall back to cache
         if self.cache_available:
             try:
@@ -1401,7 +1401,7 @@ class MyApp(App):
                 return
             except CacheError:
                 self.cache_available = False
-        
+
         # No storage available
         self.show_error("Cannot save task: no storage available")
 ```
@@ -1412,7 +1412,7 @@ Use Textual's built-in logging:
 
 ```python
 class MyApp(App):
-    
+
     async def on_mount(self) -> None:
         """Demonstrate logging levels."""
         self.log.debug("Debug info for development")
@@ -1420,7 +1420,7 @@ class MyApp(App):
         self.log.warning("Warning about potential issue")
         self.log.error("Error that was handled")
         self.log.exception("Error with full traceback")
-    
+
     async def critical_operation(self) -> None:
         """Log errors with context."""
         try:

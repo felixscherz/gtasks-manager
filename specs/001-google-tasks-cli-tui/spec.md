@@ -1,8 +1,8 @@
 # Feature Specification: Google Tasks CLI and TUI Manager
 
-**Feature Branch**: `001-google-tasks-cli-tui`  
-**Created**: 2026-01-07  
-**Status**: Draft  
+**Feature Branch**: `001-google-tasks-cli-tui`
+**Created**: 2026-01-07
+**Status**: Draft
 **Input**: User description: "I want to build a google tasks CLI for managing todo lists using the command line. While there should a quick CLI to create / update/ delete tasks, I also want to create a TUI interface with python using the textual framework. The goal is to quickly glance at open tasks, have tab-like structures for different lists and be able to navigate using vim bindings."
 
 ## User Scenarios & Testing *(mandatory)*

@@ -1,7 +1,7 @@
 # Quickstart Guide
 
-**Feature**: Google Tasks CLI and TUI Manager  
-**Version**: 0.1.0  
+**Feature**: Google Tasks CLI and TUI Manager
+**Version**: 0.1.0
 **Date**: 2026-01-07
 
 ## Overview
@@ -529,6 +529,6 @@ TUI Keys:
 
 ---
 
-**Status**: Ready for use  
-**Version**: 0.1.0  
+**Status**: Ready for use
+**Version**: 0.1.0
 **Last Updated**: 2026-01-07

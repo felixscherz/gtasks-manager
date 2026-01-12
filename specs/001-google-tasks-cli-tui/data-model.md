@@ -1,7 +1,7 @@
 # Data Model Specification
 
-**Feature**: Google Tasks CLI and TUI Manager  
-**Branch**: `001-google-tasks-cli-tui`  
+**Feature**: Google Tasks CLI and TUI Manager
+**Branch**: `001-google-tasks-cli-tui`
 **Date**: 2026-01-07
 
 ## Purpose
@@ -62,19 +62,19 @@ class Task:
     notes: Optional[str] = None
     due: Optional[datetime] = None
     completed: Optional[datetime] = None
-    
+
     def mark_complete(self) -> None:
         """Mark task as completed."""
         if self.status != TaskStatus.COMPLETED:
             self.status = TaskStatus.COMPLETED
             self.completed = datetime.utcnow()
-    
+
     def mark_incomplete(self) -> None:
         """Mark task as incomplete."""
         if self.status != TaskStatus.NEEDS_ACTION:
             self.status = TaskStatus.NEEDS_ACTION
             self.completed = None
-    
+
     def is_overdue(self) -> bool:
         """Check if task is overdue."""
         if not self.due or self.status == TaskStatus.COMPLETED:
@@ -132,7 +132,7 @@ class UserCredentials:
     scopes: List[str]
     refresh_token: Optional[str] = None
     token_expiry: Optional[datetime] = None
-    
+
     def is_valid(self) -> bool:
         """Check if credentials are valid."""
         if not self.access_token:
@@ -140,7 +140,7 @@ class UserCredentials:
         if self.token_expiry and datetime.utcnow() >= self.token_expiry:
             return False
         return True
-    
+
     def needs_refresh(self) -> bool:
         """Check if token needs refreshing."""
         if not self.refresh_token:
@@ -223,11 +223,11 @@ class GoogleTaskDTO(BaseModel):
     parent: Optional[str] = None
     position: Optional[str] = None
     links: Optional[List[dict]] = None
-    
+
     class Config:
         # Allow extra fields from API we don't use
         extra = "allow"
-    
+
     def to_domain(self, list_id: str) -> Task:
         """Convert to domain Task model."""
         return Task(
@@ -240,12 +240,12 @@ class GoogleTaskDTO(BaseModel):
             due=self._parse_datetime(self.due) if self.due else None,
             completed=self._parse_datetime(self.completed) if self.completed else None,
         )
-    
+
     @staticmethod
     def _parse_datetime(dt_str: str) -> datetime:
         """Parse RFC 3339 datetime string."""
         return datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
-    
+
     @classmethod
     def from_domain(cls, task: Task) -> dict:
         """Convert domain Task to Google API format."""
@@ -267,10 +267,10 @@ class GoogleTaskListDTO(BaseModel):
     id: str
     title: str
     updated: str
-    
+
     class Config:
         extra = "allow"
-    
+
     def to_domain(self) -> TaskList:
         """Convert to domain TaskList model."""
         return TaskList(
@@ -313,26 +313,26 @@ class TaskCache:
     active_tasks: Dict[int, str]  # index -> task_id
     completed_tasks: Dict[int, str]
     last_updated: datetime
-    
+
     def get_task_id(self, reference: TaskReference, completed: bool = False) -> Optional[str]:
         """Get task ID from reference (int index or str ID)."""
         if isinstance(reference, str):
             return reference  # Already an ID
-        
+
         cache = self.completed_tasks if completed else self.active_tasks
         return cache.get(reference)
-    
+
     def update(self, tasks: List[Task], completed: bool = False) -> None:
         """Update cache with task list."""
         cache = {}
         for idx, task in enumerate(tasks, start=1):
             cache[idx] = task.id
-        
+
         if completed:
             self.completed_tasks = cache
         else:
             self.active_tasks = cache
-        
+
         self.last_updated = datetime.utcnow()
 ```
 
@@ -370,13 +370,13 @@ def validate_task(task: Task) -> None:
     """Validate task data."""
     if not task.title or len(task.title) > 1024:
         raise InvalidTaskError("Title must be 1-1024 characters")
-    
+
     if task.notes and len(task.notes) > 8192:
         raise InvalidTaskError("Notes must be max 8192 characters")
-    
+
     if task.status == TaskStatus.COMPLETED and not task.completed:
         raise InvalidTaskError("Completed task must have completion timestamp")
-    
+
     if task.status == TaskStatus.NEEDS_ACTION and task.completed:
         raise InvalidTaskError("Incomplete task cannot have completion timestamp")
 ```
@@ -453,9 +453,9 @@ def task_from_dict(data: dict) -> Task:
 
 ## Summary
 
-**Core Models**: 3 (Task, TaskList, UserCredentials)  
-**Value Objects**: 2 (TaskStatus, TaskReference)  
-**DTOs**: 2 (GoogleTaskDTO, GoogleTaskListDTO)  
+**Core Models**: 3 (Task, TaskList, UserCredentials)
+**Value Objects**: 2 (TaskStatus, TaskReference)
+**DTOs**: 2 (GoogleTaskDTO, GoogleTaskListDTO)
 **Cache Models**: 1 (TaskCache)
 
 All models are designed to:

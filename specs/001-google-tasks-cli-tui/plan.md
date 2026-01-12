@@ -1,45 +1,45 @@
 # Implementation Plan: Google Tasks CLI and TUI Manager
 
-**Branch**: `001-google-tasks-cli-tui` | **Date**: 2026-01-07 | **Spec**: [spec.md](./spec.md)  
+**Branch**: `001-google-tasks-cli-tui` | **Date**: 2026-01-07 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-google-tasks-cli-tui/spec.md`
 
 ## Summary
 
 Build a Google Tasks management tool with both CLI commands for quick task operations and a Terminal User Interface (TUI) for visual task browsing. The implementation rebuilds the application with clean architecture supporting both interfaces, comprehensive test coverage, and proper separation of concerns. Reuses existing OAuth2 client configuration.
 
-**Scope**: P1 (CLI Task Management) + P2 (Visual TUI Dashboard)  
+**Scope**: P1 (CLI Task Management) + P2 (Visual TUI Dashboard)
 **Deferred**: P3 features (advanced tab navigation, full vim bindings) - will be added in future iterations
 
 ## Technical Context
 
-**Language/Version**: Python 3.11+  
-**Primary Dependencies**: 
+**Language/Version**: Python 3.11+
+**Primary Dependencies**:
 - Click 8.0+ (CLI framework)
 - Textual 0.47+ (TUI framework)
 - google-api-python-client 2.0+ (Google Tasks API)
 - google-auth-oauthlib 1.0+ (OAuth2 authentication)
 - google-auth-httplib2 0.2+ (HTTP transport for Google APIs)
 
-**Storage**: Local filesystem (OAuth tokens in `~/.config/gtasks-manager/token.json`)  
-**Testing**: 
+**Storage**: Local filesystem (OAuth tokens in `~/.config/gtasks-manager/token.json`)
+**Testing**:
 - pytest (unit and integration tests)
 - pytest-asyncio (async TUI testing)
 - pytest-mock (mocking Google API calls)
 - Coverage target: 90%+ for core modules
 
-**Target Platform**: Linux/macOS/Windows terminals with UTF-8 support  
-**Project Type**: Single Python package with dual interfaces (CLI + TUI)  
-**Performance Goals**: 
+**Target Platform**: Linux/macOS/Windows terminals with UTF-8 support
+**Project Type**: Single Python package with dual interfaces (CLI + TUI)
+**Performance Goals**:
 - CLI commands complete in <2 seconds
 - TUI launches in <3 seconds
 - Support 100+ tasks without performance degradation
 
-**Constraints**: 
+**Constraints**:
 - No offline mode (requires internet for Google Tasks API)
 - Terminal minimum: 80x24 characters
 - Python 3.11+ required
 
-**Scale/Scope**: 
+**Scale/Scope**:
 - Single-user application
 - Support up to 10,000 tasks across all lists
 - 10-15 CLI commands
@@ -51,7 +51,7 @@ Build a Google Tasks management tool with both CLI commands for quick task opera
 
 **Status**: ✅ PASS (No constitution defined - project does not have formal architecture principles)
 
-**Notes**: 
+**Notes**:
 - Project has empty constitution template in `.specify/memory/constitution.md`
 - No formal architectural constraints to validate against
 - Following Python best practices and package standards
@@ -144,7 +144,7 @@ pytest.ini                 # Pytest configuration
 .coveragerc               # Coverage configuration
 ```
 
-**Structure Decision**: 
+**Structure Decision**:
 
 Selected **Single project** structure with **Hexagonal Architecture** (Ports & Adapters):
 
@@ -433,7 +433,7 @@ From existing codebase (`src/gtasks_manager/`):
 2. Adapters: Translate external errors to domain exceptions
 3. Interfaces: Catch exceptions, show user-friendly messages
 
-**Network Issues**: 
+**Network Issues**:
 - Detect and report clearly
 - Suggest troubleshooting steps
 - No silent failures
@@ -452,7 +452,7 @@ The following P3 features are **out of scope** for this implementation:
    - Vim-like command mode
    - Will be added incrementally based on user feedback
 
-**Why deferred**: 
+**Why deferred**:
 - P1+P2 provides complete functional value
 - TUI foundation must be solid before advanced navigation
 - Can gather user feedback on basic TUI first
@@ -476,6 +476,6 @@ The following P3 features are **out of scope** for this implementation:
 
 ---
 
-**Plan Status**: Ready for Phase 0 Research  
-**Estimated Implementation Time**: 3-4 weeks for P1+P2 scope with comprehensive tests  
+**Plan Status**: Ready for Phase 0 Research
+**Estimated Implementation Time**: 3-4 weeks for P1+P2 scope with comprehensive tests
 **Next Command**: Continue with research phase automatically

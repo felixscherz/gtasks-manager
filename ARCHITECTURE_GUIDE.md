@@ -69,11 +69,11 @@ class Task:
     notes: Optional[str]
     due_date: Optional[datetime]
     status: str = 'needsAction'
-    
+
     def mark_complete(self) -> None:
         """Domain logic lives here"""
         self.status = 'completed'
-    
+
     def is_overdue(self) -> bool:
         if not self.due_date:
             return False
@@ -116,7 +116,7 @@ class TaskRepository(Protocol):
 class UnitOfWork(Protocol):
     """Port: transaction boundary"""
     tasks: TaskRepository
-    
+
     def commit(self) -> None: ...
     def rollback(self) -> None: ...
     def __enter__(self): ...
@@ -130,13 +130,13 @@ def list_tasks(
     """Use case: List tasks with optional filtering"""
     with uow:
         tasks = uow.tasks.list()
-        
+
         if not show_completed:
             tasks = [t for t in tasks if t.status != 'completed']
-        
+
         # Use domain service for sorting
         tasks = domain_services.prioritize_tasks(tasks)
-        
+
         return tasks
 
 def create_task(
@@ -152,11 +152,11 @@ def create_task(
         notes=notes,
         due_date=due_date
     )
-    
+
     with uow:
         uow.tasks.add(task)
         uow.commit()
-    
+
     return task
 
 def complete_task(
@@ -181,19 +181,19 @@ from typing import Protocol
 
 class TaskService:
     """Application service as a class"""
-    
+
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
-    
+
     def list_tasks(self, show_completed: bool = False) -> list[Task]:
         with self.uow:
             tasks = self.uow.tasks.list()
-            
+
             if not show_completed:
                 tasks = [t for t in tasks if t.status != 'completed']
-            
+
             return domain_services.prioritize_tasks(tasks)
-    
+
     def create_task(
         self,
         title: str,
@@ -201,11 +201,11 @@ class TaskService:
         due_date: datetime | None = None
     ) -> Task:
         task = Task(id=None, title=title, notes=notes, due_date=due_date)
-        
+
         with self.uow:
             self.uow.tasks.add(task)
             self.uow.commit()
-        
+
         return task
 ```
 
@@ -247,7 +247,7 @@ class Task:
     due_date: Optional[datetime] = None
     status: str = 'needsAction'
     completed_date: Optional[datetime] = None
-    
+
     def mark_complete(self) -> None:
         self.status = 'completed'
         self.completed_date = datetime.now()
@@ -266,14 +266,14 @@ class GoogleTaskSchema(BaseModel):
     due: Optional[str] = None  # RFC 3339 format
     status: str
     completed: Optional[str] = None
-    
+
     @field_validator('due', 'completed', mode='before')
     @classmethod
     def parse_rfc3339(cls, v: str | None) -> datetime | None:
         if not v:
             return None
         return datetime.fromisoformat(v.replace('Z', '+00:00'))
-    
+
     class Config:
         # Don't allow extra fields from Google
         extra = 'forbid'
@@ -284,7 +284,7 @@ from ..domain.model import Task
 
 class GoogleTasksAdapter:
     """Converts between domain and Google API models"""
-    
+
     @staticmethod
     def to_domain(google_task: GoogleTaskSchema) -> Task:
         """Google API → Domain Model"""
@@ -296,7 +296,7 @@ class GoogleTasksAdapter:
             status=google_task.status,
             completed_date=google_task.completed
         )
-    
+
     @staticmethod
     def from_domain(task: Task) -> dict:
         """Domain Model → Google API dict"""
@@ -304,13 +304,13 @@ class GoogleTasksAdapter:
             'title': task.title,
             'status': task.status,
         }
-        
+
         if task.notes:
             result['notes'] = task.notes
-        
+
         if task.due_date:
             result['due'] = task.due_date.isoformat() + 'Z'
-        
+
         return result
 ```
 
@@ -342,11 +342,11 @@ from typing import Callable
 
 class FileEventBus:
     """Simple file-based events for process communication"""
-    
+
     def __init__(self, event_dir: Path):
         self.event_dir = event_dir
         self.event_dir.mkdir(parents=True, exist_ok=True)
-    
+
     def publish(self, event_type: str, data: dict) -> None:
         """Write event to file"""
         event = {
@@ -354,23 +354,23 @@ class FileEventBus:
             'timestamp': datetime.now().isoformat(),
             'data': data
         }
-        
+
         event_file = self.event_dir / f"{event_type}_{datetime.now().timestamp()}.json"
         event_file.write_text(json.dumps(event))
-    
+
     def poll_events(self, since: datetime) -> list[dict]:
         """Read events since timestamp"""
         events = []
-        
+
         for event_file in self.event_dir.glob('*.json'):
             # Parse timestamp from filename
             timestamp = float(event_file.stem.split('_')[-1])
-            
+
             if datetime.fromtimestamp(timestamp) > since:
                 events.append(json.loads(event_file.read_text()))
-        
+
         return sorted(events, key=lambda e: e['timestamp'])
-    
+
     def clear_old_events(self, before: datetime) -> None:
         """Cleanup old event files"""
         for event_file in self.event_dir.glob('*.json'):
@@ -389,11 +389,11 @@ class TaskTUI:
         self.event_bus = event_bus
         self.last_check = datetime.now()
         self.cached_tasks = []
-    
+
     def refresh_if_needed(self):
         events = self.event_bus.poll_events(since=self.last_check)
-        
-        if any(e['type'] in ['task_created', 'task_updated', 'task_deleted'] 
+
+        if any(e['type'] in ['task_created', 'task_updated', 'task_deleted']
                for e in events):
             self.cached_tasks = list_tasks(uow=real_uow)
             self.last_check = datetime.now()
@@ -411,11 +411,11 @@ import json
 
 class SQLiteCache:
     """SQLite-backed cache with change tracking"""
-    
+
     def __init__(self, db_path: Path):
         self.db_path = db_path
         self._init_db()
-    
+
     def _init_db(self):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute('''
@@ -425,39 +425,39 @@ class SQLiteCache:
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            
+
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS cache_metadata (
                     key TEXT PRIMARY KEY,
                     value TEXT NOT NULL
                 )
             ''')
-    
+
     def set_tasks(self, tasks: list[Task]) -> None:
         """Update cache with new task list"""
         with sqlite3.connect(self.db_path) as conn:
             # Clear old tasks
             conn.execute('DELETE FROM tasks')
-            
+
             # Insert new tasks
             for task in tasks:
                 conn.execute(
                     'INSERT INTO tasks (id, data) VALUES (?, ?)',
                     (task.id, json.dumps(task.__dict__))
                 )
-            
+
             # Update timestamp
             conn.execute(
                 'REPLACE INTO cache_metadata (key, value) VALUES (?, ?)',
                 ('last_sync', datetime.now().isoformat())
             )
-    
+
     def get_tasks(self) -> list[Task]:
         """Retrieve cached tasks"""
         with sqlite3.connect(self.db_path) as conn:
             rows = conn.execute('SELECT data FROM tasks').fetchall()
             return [Task(**json.loads(row[0])) for row in rows]
-    
+
     def get_last_sync(self) -> datetime | None:
         """When was cache last updated?"""
         with sqlite3.connect(self.db_path) as conn:
@@ -465,11 +465,11 @@ class SQLiteCache:
                 'SELECT value FROM cache_metadata WHERE key = ?',
                 ('last_sync',)
             ).fetchone()
-            
+
             if row:
                 return datetime.fromisoformat(row[0])
             return None
-    
+
     def invalidate(self) -> None:
         """Mark cache as stale"""
         with sqlite3.connect(self.db_path) as conn:
@@ -483,11 +483,11 @@ def list_tasks_cached(
 ) -> list[Task]:
     """List tasks with caching"""
     last_sync = cache.get_last_sync()
-    
+
     # Use cache if fresh enough
     if last_sync and (datetime.now() - last_sync).seconds < max_age_seconds:
         return cache.get_tasks()
-    
+
     # Otherwise refresh
     tasks = list_tasks(uow=uow)
     cache.set_tasks(tasks)
@@ -519,15 +519,15 @@ class TaskCompleted(Event):
 
 class MessageBus:
     """In-process event bus"""
-    
+
     def __init__(self):
         self.handlers: Dict[Type[Event], list[Callable]] = {}
-    
+
     def subscribe(self, event_type: Type[Event], handler: Callable):
         if event_type not in self.handlers:
             self.handlers[event_type] = []
         self.handlers[event_type].append(handler)
-    
+
     def publish(self, event: Event):
         for handler in self.handlers.get(type(event), []):
             handler(event)
@@ -573,15 +573,15 @@ class Config:
     config_dir: Path
     cache_dir: Path
     token_file: Path
-    
+
     # Google API
     google_client_id: str
     google_client_secret: str
     google_scopes: list[str]
-    
+
     # Cache settings
     cache_max_age_seconds: int
-    
+
     @classmethod
     def from_env(cls) -> 'Config':
         """Build config from environment variables"""
@@ -589,12 +589,12 @@ class Config:
             os.getenv('GTASKS_CONFIG_DIR', Path.home() / '.config' / 'gtasks-manager')
         )
         config_dir.mkdir(parents=True, exist_ok=True)
-        
+
         cache_dir = Path(
             os.getenv('GTASKS_CACHE_DIR', Path.home() / '.cache' / 'gtasks-manager')
         )
         cache_dir.mkdir(parents=True, exist_ok=True)
-        
+
         return cls(
             config_dir=config_dir,
             cache_dir=cache_dir,
@@ -615,12 +615,12 @@ default_config = Config.from_env()
 def get_google_service(config: Config = default_config):
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
-    
+
     creds = Credentials.from_authorized_user_file(
         str(config.token_file),
         config.google_scopes
     )
-    
+
     return build('tasks', 'v1', credentials=creds)
 ```
 
@@ -691,12 +691,12 @@ def get_task(task_id: str, uow: UnitOfWork) -> Task:
     try:
         with uow:
             task = uow.tasks.get(task_id)
-            
+
             if not task:
                 raise TaskNotFoundError(task_id)
-            
+
             return task
-    
+
     except GoogleAPIError as e:
         # Log infrastructure error
         logger.error(f"Google API error: {e}")
@@ -716,15 +716,15 @@ def get_task_command(task_id: str):
     try:
         task = get_task(task_id, uow=real_uow)
         click.echo(f"{task.title}")
-    
+
     except TaskNotFoundError as e:
         click.echo(f"Error: {e}", err=True)
         raise click.Abort()
-    
+
     except DomainException as e:
         click.echo(f"Error: {e}", err=True)
         raise click.Abort()
-    
+
     except AdapterException as e:
         click.echo(f"System error: {e}", err=True)
         click.echo("Please try again later", err=True)
@@ -746,20 +746,20 @@ E = TypeVar('E')
 @dataclass
 class Ok(Generic[T]):
     value: T
-    
+
     def is_ok(self) -> bool:
         return True
-    
+
     def is_err(self) -> bool:
         return False
 
 @dataclass
 class Err(Generic[E]):
     error: E
-    
+
     def is_ok(self) -> bool:
         return False
-    
+
     def is_err(self) -> bool:
         return True
 
@@ -771,12 +771,12 @@ def get_task(task_id: str, uow: UnitOfWork) -> Result[Task, str]:
     try:
         with uow:
             task = uow.tasks.get(task_id)
-            
+
             if not task:
                 return Err(f"Task not found: {task_id}")
-            
+
             return Ok(task)
-    
+
     except Exception as e:
         return Err(f"Failed to get task: {e}")
 
@@ -785,7 +785,7 @@ def get_task(task_id: str, uow: UnitOfWork) -> Result[Task, str]:
 @click.argument('task_id')
 def get_task_command(task_id: str):
     result = get_task(task_id, uow=real_uow)
-    
+
     if result.is_ok():
         click.echo(result.value.title)
     else:
@@ -817,23 +817,23 @@ def bootstrap_production(config: Config | None = None) -> TaskService:
     """Wire up real dependencies for production"""
     if config is None:
         config = Config.from_env()
-    
+
     # Infrastructure
     cache = SQLiteCache(config.cache_dir / 'tasks.db')
     repository = GoogleTasksRepository(config)
     uow = SqlAlchemyUnitOfWork(repository)
-    
+
     # Service
     return TaskService(uow=uow, cache=cache)
 
 def bootstrap_test(tmp_path: Path) -> TaskService:
     """Wire up test doubles for testing"""
     from .testing.fakes import FakeTaskRepository, FakeUnitOfWork, FakeCache
-    
+
     repository = FakeTaskRepository()
     uow = FakeUnitOfWork(repository)
     cache = FakeCache()
-    
+
     return TaskService(uow=uow, cache=cache)
 
 # CLI entrypoint
@@ -864,7 +864,7 @@ class TaskTUI(App):
     def __init__(self):
         super().__init__()
         self.service = bootstrap_production()
-    
+
     def on_mount(self):
         tasks = self.service.list_tasks()
         # ... render tasks
@@ -997,14 +997,14 @@ def test_task_is_overdue():
         title='Test',
         due_date=yesterday
     )
-    
+
     assert task.is_overdue()
 
 def test_mark_complete():
     """Test domain behavior"""
     task = Task(id='1', title='Test')
     task.mark_complete()
-    
+
     assert task.status == 'completed'
     assert task.completed_date is not None
 
@@ -1019,12 +1019,12 @@ def test_list_tasks_filters_completed():
     repo = FakeTaskRepository()
     repo.add(Task(id='1', title='Active', status='needsAction'))
     repo.add(Task(id='2', title='Done', status='completed'))
-    
+
     uow = FakeUnitOfWork(repo)
-    
+
     # Act
     tasks = list_tasks(uow=uow, show_completed=False)
-    
+
     # Assert
     assert len(tasks) == 1
     assert tasks[0].title == 'Active'
@@ -1042,15 +1042,15 @@ from gtasks_manager.domain.model import Task
 def test_repository_roundtrip(test_config):
     """Test with real Google API (or test instance)"""
     repo = GoogleTasksRepository(test_config)
-    
+
     # Create
     task = Task(id=None, title='Integration Test Task')
     repo.add(task)
-    
+
     # Read
     retrieved = repo.get(task.id)
     assert retrieved.title == 'Integration Test Task'
-    
+
     # Cleanup
     repo.delete(task.id)
 ```
@@ -1065,12 +1065,12 @@ from gtasks_manager.entrypoints.cli import cli
 def test_create_and_list_task(test_config):
     """Test full CLI workflow"""
     runner = CliRunner()
-    
+
     # Create task
     result = runner.invoke(cli, ['create', 'Test Task'])
     assert result.exit_code == 0
     assert 'Created' in result.output
-    
+
     # List tasks
     result = runner.invoke(cli, ['list'])
     assert result.exit_code == 0
@@ -1086,45 +1086,45 @@ from gtasks_manager.service_layer.unit_of_work import UnitOfWork
 
 class FakeTaskRepository:
     """In-memory repository for testing"""
-    
+
     def __init__(self):
         self._tasks: dict[str, Task] = {}
         self._next_id = 1
-    
+
     def add(self, task: Task) -> None:
         if task.id is None:
             task.id = str(self._next_id)
             self._next_id += 1
         self._tasks[task.id] = task
-    
+
     def get(self, task_id: str) -> Task | None:
         return self._tasks.get(task_id)
-    
+
     def list(self) -> list[Task]:
         return list(self._tasks.values())
-    
+
     def update(self, task: Task) -> None:
         self._tasks[task.id] = task
-    
+
     def delete(self, task_id: str) -> None:
         self._tasks.pop(task_id, None)
 
 class FakeUnitOfWork:
     """Fake UoW for testing"""
-    
+
     def __init__(self, repository: FakeTaskRepository | None = None):
         self.tasks = repository or FakeTaskRepository()
         self.committed = False
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, *args):
         pass
-    
+
     def commit(self):
         self.committed = True
-    
+
     def rollback(self):
         pass
 ```
@@ -1135,10 +1135,10 @@ class FakeUnitOfWork:
 
 1. **Architecture**: Hexagonal/Clean with service layer
 2. **Service Layer**: Functions (not classes) for stateless use cases
-3. **Data Models**: 
+3. **Data Models**:
    - Dataclasses for domain
    - Pydantic for API boundaries
-4. **Cache/State**: 
+4. **Cache/State**:
    - Start with file-based events
    - Graduate to SQLite when needed
 5. **Configuration**: Single `Config` dataclass with env overrides

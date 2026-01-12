@@ -24,7 +24,7 @@ def get_credentials(force_reauth=False):
             flow = InstalledAppFlow.from_client_config(CLIENT_CONFIG, SCOPES)
             creds = flow.run_local_server(port=0)
 
-        with open(TOKEN_FILE, 'w') as token:
+        with open(TOKEN_FILE, "w") as token:
             token.write(creds.to_json())
 
     return creds

@@ -103,9 +103,9 @@ from .task_cache import TaskCache
 
 ```python
 # Good examples from codebase
-def create_task(self, title: str, notes: Optional[str] = None, 
+def create_task(self, title: str, notes: Optional[str] = None,
                due_date: Optional[str] = None) -> Optional[Dict[str, Any]]:
-    
+
 def resolve_task_reference(reference: str, show_completed: bool = False) -> Optional[str]:
 ```
 
@@ -277,14 +277,14 @@ from textual import work
 
 class TaskListWidget(Static):
     tasks = reactive(list)  # Auto-updates UI
-    
+
     def compose(self):
         yield TaskList(self.tasks)
-    
+
     def watch_tasks(self, old, new):
         """Called when tasks change."""
         self.refresh()
-    
+
     @work
     async def load_tasks(self):
         """Background API call."""
