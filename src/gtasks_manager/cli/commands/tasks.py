@@ -1,7 +1,7 @@
 import click
 
 from gtasks_manager.cli.formatters import CLIFormatter
-from gtasks_manager.cli.main import handle_exception
+from gtasks_manager.cli.utils import handle_exception
 
 
 @click.command()
