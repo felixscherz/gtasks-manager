@@ -1,12 +1,14 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
 from gtasks_manager.adapters.google_tasks import GoogleTasksAdapter
-from gtasks_manager.core.exceptions import NotFoundError, AuthenticationError
+from gtasks_manager.core.exceptions import NotFoundError
 
 
 @pytest.fixture
 def adapter():
-    with patch("gtasks_manager.adapters.google_tasks.build") as mock_build:
+    with patch("gtasks_manager.adapters.google_tasks.build"):
         adapter = GoogleTasksAdapter()
         adapter._service = MagicMock()
         yield adapter

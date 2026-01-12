@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Union
 
 
 class UIFocusPane(str, Enum):
@@ -18,7 +17,7 @@ class UIFocus:
     """Represents the current UI focus state."""
 
     pane: UIFocusPane
-    index: Optional[int] = None
+    index: int | None = None
 
     def validate_index(self, max_length: int) -> bool:
         """Validate that the index is within bounds.
@@ -49,10 +48,10 @@ class Task:
     title: str
     status: TaskStatus
     list_id: str
-    updated: Optional[datetime] = None
-    notes: Optional[str] = None
-    due: Optional[datetime] = None
-    completed: Optional[datetime] = None
+    updated: datetime | None = None
+    notes: str | None = None
+    due: datetime | None = None
+    completed: datetime | None = None
 
     def mark_complete(self) -> None:
         """Mark task as completed."""
@@ -80,7 +79,7 @@ class TaskList:
 
     id: str
     title: str
-    updated: Optional[datetime] = None
+    updated: datetime | None = None
 
 
 @dataclass
@@ -88,9 +87,9 @@ class UserCredentials:
     """Represents OAuth2 authentication state."""
 
     access_token: str
-    scopes: List[str]
-    refresh_token: Optional[str] = None
-    token_expiry: Optional[datetime] = None
+    scopes: list[str]
+    refresh_token: str | None = None
+    token_expiry: datetime | None = None
 
     def is_valid(self) -> bool:
         """Check if credentials are valid."""
@@ -111,4 +110,4 @@ class UserCredentials:
         return datetime.utcnow() + buffer >= self.token_expiry
 
 
-TaskReference = Union[str, int]
+TaskReference = str | int

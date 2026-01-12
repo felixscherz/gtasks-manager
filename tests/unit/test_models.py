@@ -1,6 +1,6 @@
-import pytest
 from datetime import datetime, timedelta
-from gtasks_manager.core.models import Task, TaskStatus, TaskList, UserCredentials
+
+from gtasks_manager.core.models import Task, TaskStatus, UserCredentials
 
 
 def test_task_mark_complete():

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -12,7 +12,7 @@ class TasksManager:
         self.creds = get_credentials(force_reauth)
         self.service = build("tasks", "v1", credentials=self.creds)
 
-    def get_task_lists(self) -> List[Dict[str, Any]]:
+    def get_task_lists(self) -> list[dict[str, Any]]:
         try:
             results = self.service.tasklists().list().execute()
             return results.get("items", [])
@@ -20,7 +20,7 @@ class TasksManager:
             print(f"An error occurred: {error}")
             return []
 
-    def get_default_task_list_id(self) -> Optional[str]:
+    def get_default_task_list_id(self) -> str | None:
         task_lists = self.get_task_lists()
         if task_lists:
             return task_lists[0]["id"]
@@ -29,10 +29,10 @@ class TasksManager:
     def create_task(
         self,
         title: str,
-        notes: Optional[str] = None,
-        due_date: Optional[str] = None,
-        task_list_id: Optional[str] = None,
-    ) -> Optional[Dict[str, Any]]:
+        notes: str | None = None,
+        due_date: str | None = None,
+        task_list_id: str | None = None,
+    ) -> dict[str, Any] | None:
         if not task_list_id:
             task_list_id = self.get_default_task_list_id()
             if not task_list_id:
@@ -57,8 +57,8 @@ class TasksManager:
             return None
 
     def list_tasks(
-        self, task_list_id: Optional[str] = None, show_completed: bool = False
-    ) -> List[Dict[str, Any]]:
+        self, task_list_id: str | None = None, show_completed: bool = False
+    ) -> list[dict[str, Any]]:
         if not task_list_id:
             task_list_id = self.get_default_task_list_id()
             if not task_list_id:
@@ -80,7 +80,7 @@ class TasksManager:
             print(f"An error occurred: {error}")
             return []
 
-    def complete_task(self, task_id: str, task_list_id: Optional[str] = None) -> bool:
+    def complete_task(self, task_id: str, task_list_id: str | None = None) -> bool:
         if not task_list_id:
             task_list_id = self.get_default_task_list_id()
             if not task_list_id:
@@ -100,7 +100,7 @@ class TasksManager:
             print(f"An error occurred: {error}")
             return False
 
-    def delete_task(self, task_id: str, task_list_id: Optional[str] = None) -> bool:
+    def delete_task(self, task_id: str, task_list_id: str | None = None) -> bool:
         if not task_list_id:
             task_list_id = self.get_default_task_list_id()
             if not task_list_id:
@@ -114,7 +114,7 @@ class TasksManager:
             print(f"An error occurred: {error}")
             return False
 
-    def toggle_task_completion(self, task_id: str, task_list_id: Optional[str] = None) -> bool:
+    def toggle_task_completion(self, task_id: str, task_list_id: str | None = None) -> bool:
         if not task_list_id:
             task_list_id = self.get_default_task_list_id()
             if not task_list_id:

@@ -1,12 +1,14 @@
 import click
-from typing import Optional
 
 from gtasks_manager.adapters.google_tasks import GoogleTasksAdapter
-from gtasks_manager.core.task_cache import TaskCache
-from gtasks_manager.core.services import TaskService
-from gtasks_manager.core.exceptions import APIError, AuthenticationError
-from gtasks_manager.config import CONFIG_DIR
+from gtasks_manager.cli.commands.auth import auth, logout
+from gtasks_manager.cli.commands.lists import lists
+from gtasks_manager.cli.commands.tasks import complete, create, delete, list_tasks, update
 from gtasks_manager.cli.formatters import CLIFormatter
+from gtasks_manager.config import CONFIG_DIR
+from gtasks_manager.core.exceptions import APIError, AuthenticationError
+from gtasks_manager.core.services import TaskService
+from gtasks_manager.core.task_cache import TaskCache
 
 # Dependency Injection / Bootstrap
 _adapter = GoogleTasksAdapter()
@@ -38,12 +40,6 @@ def handle_exception(e: Exception):
 def process_result(result, **kwargs):
     # Ensure cache is saved after operations
     _cache.save(CONFIG_DIR / "task_cache.json")
-
-
-# Command imports
-from .commands.auth import auth, logout
-from .commands.tasks import create, list_tasks, update, delete, complete
-from .commands.lists import lists
 
 
 @click.command()

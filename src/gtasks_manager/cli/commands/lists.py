@@ -1,4 +1,5 @@
 import click
+
 from gtasks_manager.cli.formatters import CLIFormatter
 from gtasks_manager.cli.main import handle_exception
 

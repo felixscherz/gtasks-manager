@@ -1,48 +1,48 @@
-import click
 from datetime import datetime
-from typing import Optional
 
-from .tasks import TasksManager
+import click
+
 from .auth import clear_credentials
 from .task_cache import TaskCache
+from .tasks import TasksManager
 
 
-def format_task(task, index: Optional[int] = None):
-    title = task.get('title', 'Untitled')
-    status = task.get('status', 'needsAction')
-    due = task.get('due')
-    notes = task.get('notes', '')
-    task_id = task.get('id', '')
-    
-    status_symbol = '✓' if status == 'completed' else '○'
-    
+def format_task(task, index: int | None = None):
+    title = task.get("title", "Untitled")
+    status = task.get("status", "needsAction")
+    due = task.get("due")
+    notes = task.get("notes", "")
+    task_id = task.get("id", "")
+
+    status_symbol = "✓" if status == "completed" else "○"
+
     if index is not None:
         result = f"{index}. {status_symbol} {title} (ID: {task_id})"
     else:
         result = f"{status_symbol} {title} (ID: {task_id})"
-    
+
     if due:
         try:
-            due_date = datetime.fromisoformat(due.replace('Z', '+00:00'))
+            due_date = datetime.fromisoformat(due.replace("Z", "+00:00"))
             result += f" (due: {due_date.strftime('%Y-%m-%d')})"
-        except:
+        except ValueError:
             pass
-    
+
     if notes:
         result += f"\n   Notes: {notes}"
-    
+
     return result
 
 
-def resolve_task_reference(reference: str, show_completed: bool = False) -> Optional[str]:
+def resolve_task_reference(reference: str, show_completed: bool = False) -> str | None:
     cache = TaskCache()
     task_id = cache.get_task_id(reference, show_completed)
-    
+
     if not task_id:
         click.echo(f"Task not found: {reference}")
         click.echo("Run 'gtasks list' to see available tasks with their numbers and IDs.")
         return None
-    
+
     return task_id
 
 
@@ -54,23 +54,23 @@ def main():
 
 
 @main.command()
-@click.argument('title')
-@click.option('--notes', '-n', help='Task notes/description')
-@click.option('--due', '-d', help='Due date (YYYY-MM-DD format)')
-def create(title: str, notes: Optional[str], due: Optional[str]):
+@click.argument("title")
+@click.option("--notes", "-n", help="Task notes/description")
+@click.option("--due", "-d", help="Due date (YYYY-MM-DD format)")
+def create(title: str, notes: str | None, due: str | None):
     """Create a new task."""
     try:
         manager = TasksManager()
-        
+
         due_date = None
         if due:
             try:
-                parsed_date = datetime.strptime(due, '%Y-%m-%d')
-                due_date = parsed_date.isoformat() + 'Z'
+                parsed_date = datetime.strptime(due, "%Y-%m-%d")
+                due_date = parsed_date.isoformat() + "Z"
             except ValueError:
                 click.echo("Invalid date format. Use YYYY-MM-DD.")
                 return
-        
+
         task = manager.create_task(title, notes, due_date)
         if task:
             click.echo(f"Task created: {task['title']}")
@@ -81,20 +81,20 @@ def create(title: str, notes: Optional[str], due: Optional[str]):
 
 
 @main.command()
-@click.option('--completed', '-c', is_flag=True, help='Show completed tasks')
+@click.option("--completed", "-c", is_flag=True, help="Show completed tasks")
 def list(completed: bool):
     """List all tasks."""
     try:
         manager = TasksManager()
         tasks = manager.list_tasks(show_completed=completed)
-        
+
         if not tasks:
             click.echo("No tasks found.")
             return
-        
+
         cache = TaskCache()
         cache.store_tasks(tasks, completed)
-        
+
         for i, task in enumerate(tasks, 1):
             click.echo(format_task(task, index=i))
     except Exception as e:
@@ -102,14 +102,14 @@ def list(completed: bool):
 
 
 @main.command()
-@click.argument('task_reference')
+@click.argument("task_reference")
 def complete(task_reference: str):
     """Mark a task as completed. Use task number (from list) or task ID."""
     try:
         task_id = resolve_task_reference(task_reference)
         if not task_id:
             return
-        
+
         manager = TasksManager()
         if manager.complete_task(task_id):
             click.echo("Task marked as completed.")
@@ -120,14 +120,14 @@ def complete(task_reference: str):
 
 
 @main.command()
-@click.argument('task_reference')
+@click.argument("task_reference")
 def delete(task_reference: str):
     """Delete a task. Use task number (from list) or task ID."""
     try:
         task_id = resolve_task_reference(task_reference)
         if not task_id:
             return
-        
+
         manager = TasksManager()
         if manager.delete_task(task_id):
             click.echo("Task deleted.")
@@ -143,11 +143,11 @@ def lists():
     try:
         manager = TasksManager()
         task_lists = manager.get_task_lists()
-        
+
         if not task_lists:
             click.echo("No task lists found.")
             return
-        
+
         for task_list in task_lists:
             click.echo(f"• {task_list['title']} (ID: {task_list['id']})")
     except Exception as e:
@@ -155,19 +155,19 @@ def lists():
 
 
 @main.command()
-@click.option('--force', is_flag=True, help='Force re-authentication')
+@click.option("--force", is_flag=True, help="Force re-authentication")
 def auth(force):
     """Authenticate with Google Tasks."""
     try:
         click.echo("Authenticating with Google...")
         if force:
             click.echo("Forcing re-authentication...")
-        
-        manager = TasksManager(force_reauth=force)
-        
+
+        TasksManager(force_reauth=force)
+
         click.echo("✓ Authentication successful!")
         click.echo("You can now use all gtasks commands.")
-        
+
     except Exception as e:
         click.echo(f"✗ Authentication failed: {e}")
         click.echo("\nTroubleshooting:")
@@ -181,5 +181,5 @@ def logout():
     clear_credentials()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

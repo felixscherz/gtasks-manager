@@ -1,7 +1,9 @@
-import pytest
 from datetime import datetime
-from gtasks_manager.core.task_cache import TaskCache
+
+import pytest
+
 from gtasks_manager.core.models import Task, TaskStatus
+from gtasks_manager.core.task_cache import TaskCache
 
 
 @pytest.fixture

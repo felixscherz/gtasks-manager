@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,11 +14,11 @@ class GoogleTaskDTO(BaseModel):
     title: str
     status: str
     updated: str
-    notes: Optional[str] = None
-    due: Optional[str] = None
-    completed: Optional[str] = None
-    parent: Optional[str] = None
-    position: Optional[str] = None
+    notes: str | None = None
+    due: str | None = None
+    completed: str | None = None
+    parent: str | None = None
+    position: str | None = None
 
     def to_domain(self, list_id: str) -> Task:
         """Convert to domain Task model."""

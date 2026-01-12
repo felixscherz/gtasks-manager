@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Protocol
+from typing import Protocol
 
 from .models import Task, TaskList
 
@@ -22,7 +22,7 @@ class TasksAPIProtocol(Protocol):
         """
         ...
 
-    def list_task_lists(self) -> List[TaskList]:
+    def list_task_lists(self) -> list[TaskList]:
         """
         Get all task lists for the authenticated user.
 
@@ -35,7 +35,7 @@ class TasksAPIProtocol(Protocol):
         """
         ...
 
-    def list_tasks(self, list_id: str, show_completed: bool = False) -> List[Task]:
+    def list_tasks(self, list_id: str, show_completed: bool = False) -> list[Task]:
         """
         Get tasks from a specific task list.
 
@@ -70,7 +70,7 @@ class TasksAPIProtocol(Protocol):
         ...
 
     def create_task(
-        self, list_id: str, title: str, notes: Optional[str] = None, due: Optional[datetime] = None
+        self, list_id: str, title: str, notes: str | None = None, due: datetime | None = None
     ) -> Task:
         """
         Create a new task.
@@ -94,10 +94,10 @@ class TasksAPIProtocol(Protocol):
         self,
         list_id: str,
         task_id: str,
-        title: Optional[str] = None,
-        notes: Optional[str] = None,
-        due: Optional[datetime] = None,
-        status: Optional[str] = None,
+        title: str | None = None,
+        notes: str | None = None,
+        due: datetime | None = None,
+        status: str | None = None,
     ) -> Task:
         """
         Update an existing task.

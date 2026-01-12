@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from .models import Task, TaskList, TaskReference
 from .ports import TasksAPIProtocol
@@ -13,11 +12,11 @@ class TaskService:
         self.api = api
         self.cache = cache
 
-    def list_task_lists(self) -> List[TaskList]:
+    def list_task_lists(self) -> list[TaskList]:
         """Get all task lists."""
         return self.api.list_task_lists()
 
-    def list_tasks(self, list_id: str, show_completed: bool = False) -> List[Task]:
+    def list_tasks(self, list_id: str, show_completed: bool = False) -> list[Task]:
         """List tasks and update cache."""
         tasks = self.api.list_tasks(list_id, show_completed)
         self.cache.update(tasks, show_completed)
@@ -34,7 +33,7 @@ class TaskService:
         return self.api.get_task(list_id, task_id)
 
     def create_task(
-        self, list_id: str, title: str, notes: Optional[str] = None, due: Optional[datetime] = None
+        self, list_id: str, title: str, notes: str | None = None, due: datetime | None = None
     ) -> Task:
         """Create a new task."""
         return self.api.create_task(list_id, title, notes, due)
@@ -43,10 +42,10 @@ class TaskService:
         self,
         list_id: str,
         reference: TaskReference,
-        title: Optional[str] = None,
-        notes: Optional[str] = None,
-        due: Optional[datetime] = None,
-        status: Optional[str] = None,
+        title: str | None = None,
+        notes: str | None = None,
+        due: datetime | None = None,
+        status: str | None = None,
         completed_cache: bool = False,
     ) -> Task:
         """Update an existing task."""

@@ -1,4 +1,3 @@
-import pytest
 from gtasks_manager.tui.keybindings import KeyBindingManager
 
 

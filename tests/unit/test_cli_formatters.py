@@ -1,7 +1,7 @@
-import pytest
+from datetime import datetime
+
 from gtasks_manager.cli.formatters import CLIFormatter
 from gtasks_manager.core.models import Task, TaskList, TaskStatus
-from datetime import datetime
 
 
 def test_format_tasks_empty():

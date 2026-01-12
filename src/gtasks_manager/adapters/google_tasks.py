@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -17,7 +17,7 @@ class GoogleTasksAdapter(TasksAPIProtocol):
     """Adapter for Google Tasks API using DTOs and retry logic."""
 
     def __init__(self):
-        self._creds: Optional[Any] = None
+        self._creds: Any | None = None
         self._service: Any = None
         self._load_credentials()
 
@@ -59,7 +59,7 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         if not self._service:
             self.authenticate()
 
-    def list_task_lists(self) -> List[TaskList]:
+    def list_task_lists(self) -> list[TaskList]:
         """Get all task lists."""
         self._ensure_authenticated()
 
@@ -70,7 +70,7 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         items = response.get("items", [])
         return [GoogleTaskListDTO(**item).to_domain() for item in items]
 
-    def list_tasks(self, list_id: str, show_completed: bool = False) -> List[Task]:
+    def list_tasks(self, list_id: str, show_completed: bool = False) -> list[Task]:
         """Get tasks from a list with pagination."""
         self._ensure_authenticated()
         all_tasks = []
@@ -108,7 +108,7 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         return GoogleTaskDTO(**item).to_domain(list_id)
 
     def create_task(
-        self, list_id: str, title: str, notes: Optional[str] = None, due: Optional[datetime] = None
+        self, list_id: str, title: str, notes: str | None = None, due: datetime | None = None
     ) -> Task:
         """Create a new task."""
         self._ensure_authenticated()
@@ -128,10 +128,10 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         self,
         list_id: str,
         task_id: str,
-        title: Optional[str] = None,
-        notes: Optional[str] = None,
-        due: Optional[datetime] = None,
-        status: Optional[str] = None,
+        title: str | None = None,
+        notes: str | None = None,
+        due: datetime | None = None,
+        status: str | None = None,
     ) -> Task:
         """Update an existing task."""
         self._ensure_authenticated()

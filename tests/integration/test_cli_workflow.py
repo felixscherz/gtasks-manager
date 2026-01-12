@@ -1,7 +1,8 @@
-import pytest
-from click.testing import CliRunner
 from datetime import datetime
 from unittest.mock import MagicMock
+
+import pytest
+from click.testing import CliRunner
 
 from gtasks_manager.cli.main import cli
 from gtasks_manager.core.models import Task, TaskList, TaskStatus

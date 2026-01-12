@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Optional
 
 from gtasks_manager.config import ensure_config_dir
 
@@ -21,15 +20,15 @@ class StorageAdapter:
         if filename == "token.json":
             file_path.chmod(0o600)
 
-    def load_json(self, filename: str) -> Optional[dict]:
+    def load_json(self, filename: str) -> dict | None:
         """Load data from a JSON file."""
         file_path = self.config_dir / filename
         if not file_path.exists():
             return None
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except (OSError, json.JSONDecodeError):
             return None
 
     def delete_file(self, filename: str) -> bool:

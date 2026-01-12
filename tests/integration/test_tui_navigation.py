@@ -1,6 +1,7 @@
 import pytest
+
+from gtasks_manager.core.models import Task, TaskList, TaskStatus, UIFocus, UIFocusPane
 from gtasks_manager.tui.app import TasksApp
-from gtasks_manager.core.models import Task, TaskList, TaskStatus, UIFocusPane, UIFocus
 
 
 class TestTUIViewNavigation:

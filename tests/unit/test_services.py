@@ -1,7 +1,8 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from gtasks_manager.core.services import TaskService
-from gtasks_manager.core.models import Task, TaskStatus
 
 
 @pytest.fixture

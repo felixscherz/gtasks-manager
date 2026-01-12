@@ -1,7 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
-from unittest.mock import Mock, AsyncMock
-from gtasks_manager.tui.app import TasksApp
+
 from gtasks_manager.core.models import Task, TaskList, TaskStatus
+from gtasks_manager.tui.app import TasksApp
 
 
 class TestToggleCompletion:

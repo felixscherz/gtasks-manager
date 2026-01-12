@@ -1,6 +1,3 @@
-import click
-from typing import List, Optional
-from datetime import datetime
 from gtasks_manager.core.models import Task, TaskList, TaskStatus
 
 
@@ -8,7 +5,7 @@ class CLIFormatter:
     """Formats domain models for CLI output."""
 
     @staticmethod
-    def format_tasks(tasks: List[Task], show_completed: bool = False) -> str:
+    def format_tasks(tasks: list[Task], show_completed: bool = False) -> str:
         """Format a list of tasks."""
         if not tasks:
             return "No tasks found."
@@ -22,7 +19,7 @@ class CLIFormatter:
         return "\n".join(lines)
 
     @staticmethod
-    def format_task_lists(task_lists: List[TaskList]) -> str:
+    def format_task_lists(task_lists: list[TaskList]) -> str:
         """Format a list of task lists."""
         if not task_lists:
             return "No task lists found."
