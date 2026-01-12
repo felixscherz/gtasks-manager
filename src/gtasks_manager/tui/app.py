@@ -210,9 +210,36 @@ class TasksApp(App):
             else TaskStatus.NEEDS_ACTION
         )
 
-        task.status = new_status
-        tasks_copy = list(self.tasks)
-        self.tasks = tasks_copy
+        updated_tasks = []
+        for t in self.tasks:
+            if t.id == self.selected_task_id:
+                updated_tasks.append(
+                    Task(
+                        id=t.id,
+                        title=t.title,
+                        status=new_status,
+                        list_id=t.list_id,
+                        updated=t.updated,
+                        notes=t.notes,
+                        due=t.due,
+                        completed=t.completed,
+                    )
+                )
+            else:
+                updated_tasks.append(
+                    Task(
+                        id=t.id,
+                        title=t.title,
+                        status=t.status,
+                        list_id=t.list_id,
+                        updated=t.updated,
+                        notes=t.notes,
+                        due=t.due,
+                        completed=t.completed,
+                    )
+                )
+
+        self.tasks = updated_tasks
         self._persist_toggle(task.id, old_status)
 
     @work
