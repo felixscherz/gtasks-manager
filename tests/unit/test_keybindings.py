@@ -22,7 +22,7 @@ class TestKeyBindingManager:
         assert manager.get_action("k") == "move_up"
         assert manager.get_action("h") == "move_left"
         assert manager.get_action("l") == "move_right"
-        assert manager.get_action("Enter") == "toggle_completion"
+        assert manager.get_action("enter") == "toggle_completion"
 
     def test_get_action_when_disabled(self):
         """Test getting action returns None when bindings are disabled."""
