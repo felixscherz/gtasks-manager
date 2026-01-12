@@ -1,25 +1,26 @@
+---
 name: Python CI
 
 on:
   push:
-    branches: [ main, 001-google-tasks-cli-tui ]
+    branches: [main, 001-google-tasks-cli-tui]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Install uv
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-    - name: Set up Python 3.11
-      run: uv python install 3.11
-    - name: Install dependencies
-      run: uv sync --all-extras
-    - name: Run linting
-      run: uv run ruff check .
-    - name: Run tests
-      run: uv run pytest
+      - uses: actions/checkout@v3
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+      - name: Install dependencies
+        run: uv sync --all-extras
+      - name: Run pre-commit hooks
+        run: uvx pre-commit run --all-files
+      - name: Run tests
+        run: uv run pytest
