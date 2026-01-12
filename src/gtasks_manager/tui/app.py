@@ -9,6 +9,7 @@ from gtasks_manager.core.models import Task, TaskList, TaskStatus, UIFocus, UIFo
 from gtasks_manager.core.services import TaskService
 from gtasks_manager.tui.keybindings import KeyBindingManager
 from gtasks_manager.tui.utils import announce_for_accessibility
+from gtasks_manager.tui.widgets import TasksListView
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class TasksApp(App):
         yield Header()
         yield Static("Loading tasks...", id="loading-indicator")
         yield Static("[VIM]" if self.vim_enabled else "", id="vim-status")
-        yield ListView(id="task-list-view")
+        yield TasksListView(id="task-list-view")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -72,7 +73,18 @@ class TasksApp(App):
         for task in tasks:
             status = "✓" if task.status == TaskStatus.COMPLETED else "○"
             list_view.append(ListItem(Static(f"{status} {task.title}")))
+        if self.ui_focus.pane == UIFocusPane.TASK_LIST and self.ui_focus.index is not None:
+            if 0 <= self.ui_focus.index < len(tasks):
+                list_view.index = self.ui_focus.index
         self._update_selected_task()
+
+    def watch_ui_focus(self, old_focus: UIFocus, new_focus: UIFocus) -> None:
+        """Called when UI focus changes."""
+        if new_focus.pane == UIFocusPane.TASK_LIST and new_focus.index is not None:
+            list_view = self.query_one("#task-list-view", ListView)
+            if 0 <= new_focus.index < len(self.tasks):
+                list_view.index = new_focus.index
+                self._update_selected_task()
 
     def watch_loading_state(self, loading: bool) -> None:
         """Called when loading state changes."""
@@ -110,7 +122,12 @@ class TasksApp(App):
 
     def action_toggle_completion(self) -> None:
         """Toggle completion of selected task."""
+        print(f"DEBUG: action_toggle_completion called, selected_task_id={self.selected_task_id}")
         self._toggle_completion()
+
+    def on_key(self, event) -> None:
+        """Handle key events."""
+        print(f"DEBUG: on_key - key={event.key}, character={event.character}")
 
     def action_cursor_down(self) -> None:
         """Move cursor down and update selected task."""
@@ -119,6 +136,7 @@ class TasksApp(App):
             current_index = list_view.index or 0
             if current_index < len(self.tasks) - 1:
                 list_view.index = current_index + 1
+                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
             self._update_selected_task()
 
     def action_cursor_up(self) -> None:
@@ -128,6 +146,7 @@ class TasksApp(App):
             current_index = list_view.index or 0
             if current_index > 0:
                 list_view.index = current_index - 1
+                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
             self._update_selected_task()
 
     def _move_selection_up(self) -> None:
@@ -158,10 +177,16 @@ class TasksApp(App):
 
     def _update_selected_task(self) -> None:
         """Update selected_task_id based on current index."""
-        if self.ui_focus.index is not None and 0 <= self.ui_focus.index < len(self.tasks):
-            self.selected_task_id = self.tasks[self.ui_focus.index].id
+        list_view = self.query_one("#task-list-view", ListView)
+        current_index = list_view.index
+        print(
+            f"DEBUG: _update_selected_task - current_index={current_index}, len(tasks)={len(self.tasks)}"
+        )
+        if current_index is not None and 0 <= current_index < len(self.tasks):
+            self.selected_task_id = self.tasks[current_index].id
         else:
             self.selected_task_id = None
+        print(f"DEBUG: _update_selected_task - selected_task_id={self.selected_task_id}")
 
     def _toggle_completion(self) -> None:
         """Toggle completion status of selected task."""
@@ -184,14 +209,11 @@ class TasksApp(App):
     @work
     async def _persist_toggle(self, task_id: str, old_status: TaskStatus) -> None:
         """Persist toggle in background with rollback on failure."""
-        from gtasks_manager.tasks import TasksManager
-
         try:
-            manager = TasksManager()
-            success = manager.toggle_task_completion(task_id)
-            if not success:
-                self._revert_toggle(task_id, old_status)
-                logger.error(f"Failed to toggle task {task_id}")
+            new_status = "completed" if old_status == TaskStatus.NEEDS_ACTION else "needsAction"
+            self.service.update_task(
+                self.current_list_id, task_id, status=new_status, completed_cache=False
+            )
         except Exception as e:
             self._revert_toggle(task_id, old_status)
             logger.error(f"Error toggling task {task_id}: {e}")
