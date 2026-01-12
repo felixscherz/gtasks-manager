@@ -54,6 +54,7 @@ class TasksApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
+        self.call_after_refresh(self._update_selected_task)
         self.load_data()
 
     @work
@@ -68,15 +69,21 @@ class TasksApp(App):
 
     def watch_tasks(self, tasks: list[Task]) -> None:
         """Called when tasks change."""
-        list_view = self.query_one("#task-list-view", ListView)
-        list_view.clear()
-        for task in tasks:
-            status = "✓" if task.status == TaskStatus.COMPLETED else "○"
-            list_view.append(ListItem(Static(f"{status} {task.title}")))
-        if self.ui_focus.pane == UIFocusPane.TASK_LIST and self.ui_focus.index is not None:
-            if 0 <= self.ui_focus.index < len(tasks):
-                list_view.index = self.ui_focus.index
-        self._update_selected_task()
+        try:
+            list_view = self.query_one("#task-list-view", ListView)
+            list_view.clear()
+            for task in tasks:
+                status = "✓" if task.status == TaskStatus.COMPLETED else "○"
+                list_view.append(ListItem(Static(f"{status} {task.title}")))
+            if len(tasks) > 0:
+                list_view.index = 0
+                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
+                self._update_selected_task()
+            else:
+                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
+                self._update_selected_task()
+        except Exception as e:
+            logger.error(f"Error in watch_tasks: {e}")
 
     def watch_ui_focus(self, old_focus: UIFocus, new_focus: UIFocus) -> None:
         """Called when UI focus changes."""
@@ -122,12 +129,13 @@ class TasksApp(App):
 
     def action_toggle_completion(self) -> None:
         """Toggle completion of selected task."""
-        print(f"DEBUG: action_toggle_completion called, selected_task_id={self.selected_task_id}")
         self._toggle_completion()
 
     def on_key(self, event) -> None:
         """Handle key events."""
-        print(f"DEBUG: on_key - key={event.key}, character={event.character}")
+        if event.key == "enter":
+            event.stop()
+            self.action_toggle_completion()
 
     def action_cursor_down(self) -> None:
         """Move cursor down and update selected task."""
@@ -177,16 +185,15 @@ class TasksApp(App):
 
     def _update_selected_task(self) -> None:
         """Update selected_task_id based on current index."""
-        list_view = self.query_one("#task-list-view", ListView)
-        current_index = list_view.index
-        print(
-            f"DEBUG: _update_selected_task - current_index={current_index}, len(tasks)={len(self.tasks)}"
-        )
-        if current_index is not None and 0 <= current_index < len(self.tasks):
-            self.selected_task_id = self.tasks[current_index].id
-        else:
-            self.selected_task_id = None
-        print(f"DEBUG: _update_selected_task - selected_task_id={self.selected_task_id}")
+        try:
+            list_view = self.query_one("#task-list-view", ListView)
+            current_index = list_view.index
+            if current_index is not None and 0 <= current_index < len(self.tasks):
+                self.selected_task_id = self.tasks[current_index].id
+            else:
+                self.selected_task_id = None
+        except Exception as e:
+            logger.error(f"Error in _update_selected_task: {e}")
 
     def _toggle_completion(self) -> None:
         """Toggle completion status of selected task."""
@@ -204,6 +211,8 @@ class TasksApp(App):
         )
 
         task.status = new_status
+        tasks_copy = list(self.tasks)
+        self.tasks = tasks_copy
         self._persist_toggle(task.id, old_status)
 
     @work
