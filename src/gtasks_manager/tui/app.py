@@ -38,12 +38,12 @@ class TasksApp(App):
     current_list_id: reactive[str] = reactive("@default")
     loading_state: reactive[bool] = reactive(False)
     vim_enabled: reactive[bool] = reactive(True)
+    ui_focus: reactive[UIFocus] = reactive(UIFocus(pane=UIFocusPane.TASK_LIST, index=None))
 
     def __init__(self, service: TaskService):
         super().__init__()
         self.service = service
         self.keybinding_manager = KeyBindingManager()
-        self.ui_focus: UIFocus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
         self.selected_task_id: str | None = None
 
     def compose(self) -> ComposeResult:
