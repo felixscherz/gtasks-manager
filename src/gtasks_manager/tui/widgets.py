@@ -2,10 +2,8 @@ from textual.widgets import ListView
 
 
 class TasksListView(ListView):
-    """Custom ListView that adds VIM keybindings for navigation."""
+    """Custom ListView that adds a space binding for task completion."""
 
     BINDINGS = [
-        ("j", "cursor_down", "Move down"),
-        ("k", "cursor_up", "Move up"),
         ("space", "app.toggle_completion", "Toggle task"),
     ]
