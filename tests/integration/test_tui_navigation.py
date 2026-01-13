@@ -144,7 +144,6 @@ class TestTUIViewNavigation:
     async def test_enter_key_does_nothing_when_no_selection(self, app):
         """Test pressing ENTER with no selection does nothing."""
         async with app.run_test() as pilot:
-            await pilot.pause()
             app.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
             app.tasks = [
                 Task(
@@ -155,6 +154,7 @@ class TestTUIViewNavigation:
                     updated=None,
                 ),
             ]
+            app.selected_task_id = None
             initial_status = app.tasks[0].status
             await pilot.press("enter")
             assert app.tasks[0].status == initial_status
@@ -174,6 +174,7 @@ class TestTUIViewNavigation:
                     updated=None,
                 ),
             ]
+            await pilot.press("enter")
             await pilot.press("enter")
             await pilot.press("enter")
             await pilot.press("enter")

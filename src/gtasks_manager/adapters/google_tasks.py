@@ -77,19 +77,25 @@ class GoogleTasksAdapter(TasksAPIProtocol):
         page_token = None
 
         while True:
-            # page_token captured in closure
-            def request(token=page_token):
+            current_token = page_token
+
+            def request():
                 return self._service.tasks().list(
                     tasklist=list_id,
                     showCompleted=show_completed,
                     showHidden=show_completed,
-                    pageToken=token,
+                    pageToken=current_token,
                     maxResults=100,
                 )
 
             response = execute_with_retry(request)
+            if response is None:
+                break
             items = response.get("items", [])
             all_tasks.extend([GoogleTaskDTO(**item).to_domain(list_id) for item in items])
+
+            if not items:
+                break
 
             page_token = response.get("nextPageToken")
             if not page_token:

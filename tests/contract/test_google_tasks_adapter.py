@@ -46,10 +46,11 @@ def test_list_tasks_pagination(adapter):
                 }
             ]
         },
+        None,
     ]
     tasks = adapter.list_tasks("L1")
     assert len(tasks) == 2
-    assert adapter._service.tasks().list.call_count == 2
+    assert adapter._service.tasks().list().execute.call_count == 2
 
 
 def test_get_task_not_found(adapter):

@@ -80,17 +80,21 @@ class TasksApp(App):
                 self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=0)
                 self._update_selected_task()
             else:
-                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=None)
+                list_view.index = None
                 self._update_selected_task()
         except Exception as e:
             logger.error(f"Error in watch_tasks: {e}")
 
     def watch_ui_focus(self, old_focus: UIFocus, new_focus: UIFocus) -> None:
         """Called when UI focus changes."""
-        if new_focus.pane == UIFocusPane.TASK_LIST and new_focus.index is not None:
+        if new_focus.pane == UIFocusPane.TASK_LIST:
             list_view = self.query_one("#task-list-view", ListView)
-            if 0 <= new_focus.index < len(self.tasks):
+            if new_focus.index is not None and 0 <= new_focus.index < len(self.tasks):
                 list_view.index = new_focus.index
+            else:
+                list_view.index = None
+                self.selected_task_id = None
+            if old_focus != new_focus:
                 self._update_selected_task()
 
     def watch_loading_state(self, loading: bool) -> None:
@@ -133,29 +137,31 @@ class TasksApp(App):
 
     def on_key(self, event) -> None:
         """Handle key events."""
-        if event.key == "enter":
+        if event.key.lower() == "enter":
             event.stop()
             self.action_toggle_completion()
 
     def action_cursor_down(self) -> None:
         """Move cursor down and update selected task."""
+        if len(self.tasks) == 0:
+            return
         list_view = self.query_one("#task-list-view", ListView)
-        if len(self.tasks) > 0:
-            current_index = list_view.index or 0
-            if current_index < len(self.tasks) - 1:
-                list_view.index = current_index + 1
-                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
-            self._update_selected_task()
+        current_index = list_view.index if list_view.index is not None else 0
+        if current_index < len(self.tasks) - 1:
+            list_view.index = current_index + 1
+            self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
+        self._update_selected_task()
 
     def action_cursor_up(self) -> None:
         """Move cursor up and update selected task."""
+        if len(self.tasks) == 0:
+            return
         list_view = self.query_one("#task-list-view", ListView)
-        if len(self.tasks) > 0:
-            current_index = list_view.index or 0
-            if current_index > 0:
-                list_view.index = current_index - 1
-                self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
-            self._update_selected_task()
+        current_index = list_view.index if list_view.index is not None else 0
+        if current_index > 0:
+            list_view.index = current_index - 1
+            self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=list_view.index)
+        self._update_selected_task()
 
     def _move_selection_up(self) -> None:
         """Move selection up in the task list."""

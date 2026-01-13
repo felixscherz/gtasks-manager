@@ -36,8 +36,9 @@ class TestToggleCompletion:
         """Test pressing Enter toggles task from needsAction to completed."""
         async with app.run_test() as pilot:
             await pilot.pause()
-            app.selected_task_id = "task1"
+            await pilot.pause()
             await pilot.press("Enter")
+            await pilot.pause()
             assert mock_service.update_task.called
 
     @pytest.mark.asyncio
@@ -45,8 +46,9 @@ class TestToggleCompletion:
         """Test pressing Enter toggles task from completed to needsAction."""
         async with app.run_test() as pilot:
             await pilot.pause()
-            app.selected_task_id = "task1"
+            await pilot.pause()
             await pilot.press("Enter")
+            await pilot.pause()
             assert mock_service.update_task.called
 
     @pytest.mark.asyncio
@@ -54,7 +56,7 @@ class TestToggleCompletion:
         """Test that UI updates optimistically before API completes."""
         async with app.run_test() as pilot:
             await pilot.pause()
-            app.selected_task_id = "task1"
+            await pilot.pause()
             initial_status = app.tasks[0].status
             await pilot.press("Enter")
             assert app.tasks[0].status != initial_status
