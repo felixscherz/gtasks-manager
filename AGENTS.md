@@ -6,6 +6,8 @@ This document provides coding guidelines and context for AI coding agents workin
 
 A Python application for managing Google Tasks from the terminal with dual interfaces: CLI for quick commands and TUI for visual task management. Built with Click (CLI), Textual (TUI), and Google Tasks API v1 with OAuth2 authentication.
 
+**Development Workflow**: This project uses **spec-kit** (GitHub Spec Kit) for spec-driven development. All features are developed through structured specifications in the `specs/` directory.
+
 **Tech Stack:**
 - Python 3.11+
 - Click 8.0+ (CLI framework)
@@ -15,6 +17,9 @@ A Python application for managing Google Tasks from the terminal with dual inter
 - Pydantic 2.0+ (Data validation)
 - pytest + pytest-asyncio (Testing)
 - Hatchling (build backend)
+- uv (dependency management)
+- ruff (linting/formatting)
+- pre-commit (git hooks)
 
 ## Build, Test, and Run Commands
 
@@ -27,6 +32,9 @@ pip install -e .
 python -m venv .venv
 source .venv/bin/activate  # On macOS/Linux
 pip install -e .
+
+# Recommended: Use uv for faster dependency management
+uv sync
 ```
 
 ### Running the Application
@@ -37,28 +45,58 @@ gtasks auth
 gtasks list
 gtasks create "Task title"
 
-# Run directly from source (if installed in editable mode)
-python -m gtasks_manager.cli
+# Run TUI
+gtasks tui
+
+# Run directly with uv (recommended for development)
+uv run gtasks --help
+uv run gtasks list
+uv run gtasks tui
 ```
 
 ### Testing
-**Note:** This project currently has no test suite. When adding tests:
-- Use `pytest` as the test framework
-- Place tests in `tests/` directory
-- Run single test: `pytest tests/test_file.py::test_function_name`
-- Run all tests: `pytest`
-- Run with coverage: `pytest --cov=gtasks_manager`
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test file
+uv run pytest tests/unit/test_task_cache.py
+
+# Run single test function
+uv run pytest tests/unit/test_task_cache.py::test_save_and_load_cache
+
+# Run with coverage
+uv run pytest --cov=gtasks_manager
+
+# Run integration tests only
+uv run pytest tests/integration/
+
+# Run unit tests only
+uv run pytest tests/unit/
+```
 
 ### Linting/Formatting
-**Note:** No linters/formatters currently configured. When adding:
-- Prefer `ruff` for modern Python linting and formatting
-- Alternative: `black` for formatting, `flake8` for linting
-- Type checking: Use `mypy` with strict mode
+```bash
+# Check code with ruff
+uv run ruff check .
+
+# Format code with ruff
+uv run ruff format .
+
+# Fix auto-fixable issues
+uv run ruff check --fix .
+
+# Run pre-commit hooks manually
+pre-commit run --all-files
+```
 
 ### Build Commands
 ```bash
 # Build package (creates wheel and sdist)
 python -m build
+
+# Update dependencies and lock file
+uv lock --upgrade
 
 # Clean build artifacts
 rm -rf build/ dist/ *.egg-info
@@ -318,6 +356,94 @@ Python version: `>=3.11`
 - Task editing functionality
 - Recurring tasks support
 - Better error messages with troubleshooting
+
+## Spec-Kit Workflow (REQUIRED)
+
+This project uses **spec-kit** (GitHub Spec Kit) for spec-driven development. All features MUST follow this workflow:
+
+### Directory Structure
+- `.specify/` - Spec-kit configuration and templates
+- `.specify/memory/constitution.md` - Project constitution defining core principles and quality gates
+- `specs/` - All feature specifications (one directory per feature)
+- `specs/###-feature-name/` - Individual feature directory containing:
+  - `spec.md` - Main specification with user stories and requirements
+  - `plan.md` - Implementation plan with file paths and architecture decisions
+  - `tasks.md` - Granular task breakdown organized by user story
+  - `data-model.md` - Data structures and interfaces
+  - `research.md` - Technical research and design decisions
+  - `quickstart.md` - Getting started guide for the feature
+  - `checklists/` - Acceptance criteria checklists
+  - `contracts/` - API contracts and interfaces
+
+### Development Process
+
+**IMPORTANT**: Never write implementation code until completing the specification phase.
+
+1. **Initialize Feature Spec**
+   - Create new spec directory: `specs/###-feature-name/`
+   - Start with user stories in `spec.md` prioritized as independent, testable journeys
+   - Each user story must deliver standalone value (MVP-first approach)
+
+2. **Define Architecture**
+   - Write `plan.md` with file paths, data flow, and architecture decisions
+   - Create `data-model.md` with Pydantic models, DTOs, and interfaces
+   - Document in `research.md` any technical investigations or third-party APIs
+
+3. **Create Task Breakdown**
+   - Write `tasks.md` with granular tasks organized by user story
+   - Use format: `[ID] [P?] [Story] Description` where `[P]` indicates parallel-safe tasks
+   - Include exact file paths in task descriptions
+   - Group into phases: Setup → Foundational (blocking) → User Story implementations
+
+4. **Test-Driven Development (TDD)**
+   - MUST write failing tests BEFORE implementation (constitution requirement)
+   - Tasks should explicitly indicate "Write failing test for X" followed by "Implement X"
+   - Each user story must have independent test coverage
+
+5. **Implementation**
+   - Work through tasks in order (Foundation → User Story 1 → User Story 2, etc.)
+   - Mark tasks complete in `tasks.md` as you go
+   - Follow the constitution's quality gates (linting, type checking, tests pass)
+   - Make atomic commits after each discrete task
+
+6. **Quality Gates** (from constitution)
+   - **Gate 1**: No implementation until data models and test strategy approved
+   - **Gate 2**: All PRs must pass ruff linting, type checking, and full test suite
+   - **Gate 3**: Never commit secrets; use appropriate file permissions for tokens
+
+### Constitution Principles
+
+The `.specify/memory/constitution.md` defines mandatory practices:
+- Python 3.11+ with strict type hints
+- Hexagonal Architecture (core domain isolated from adapters/CLI/TUI)
+- `uv` for all dependency management
+- Test-first development (TDD) with 90%+ coverage goal
+- Textual framework patterns (reactive attributes, @work decorator)
+- Atomic commits with meaningful "why" messages
+
+### Spec-Kit Commands
+
+```bash
+# Initialize new spec-kit project (already done for this repo)
+specify init
+
+# Check required tools are installed
+specify check
+```
+
+### Example: Adding a New Feature
+
+```bash
+# 1. Create feature spec directory
+mkdir -p specs/005-my-feature
+
+# 2. Write spec.md with user stories (prioritized, independently testable)
+# 3. Write plan.md with architecture and file paths
+# 4. Write tasks.md with granular task breakdown
+# 5. Implement following TDD: tests first, then implementation
+# 6. Mark tasks complete as you go
+# 7. Make atomic commits per task
+```
 
 ## Active Technologies
 - Local filesystem (OAuth tokens in `~/.config/gtasks-manager/token.json`) (001-google-tasks-cli-tui)
