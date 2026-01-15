@@ -1,8 +1,10 @@
+import logging
 from datetime import datetime
 
 import click
 
 from .auth import clear_credentials
+from .logging_config import setup_logging
 from .task_cache import TaskCache
 from .tasks import TasksManager
 
@@ -49,16 +51,30 @@ def resolve_task_reference(reference: str, show_completed: bool = False) -> str 
 @click.group()
 @click.version_option()
 def main():
-    """Google Tasks Manager - Manage your Google Tasks from the command line."""
-    pass
+    """Google Tasks Manager - Manage your Google Tasks from the command line.
+
+    \b
+    Logging:
+      Logs are written to OS-specific location (e.g., ~/.config/gtasks-manager/logs/gtasks.log)
+      Use -v or -vv flag for increased logging verbosity.
+    """
 
 
 @main.command()
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
 @click.argument("title")
 @click.option("--notes", "-n", help="Task notes/description")
 @click.option("--due", "-d", help="Due date (YYYY-MM-DD format)")
-def create(title: str, notes: str | None, due: str | None):
+def create(verbose: int, title: str, notes: str | None, due: str | None):
     """Create a new task."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'create' command with title: %s", title)
+
     try:
         manager = TasksManager()
 
@@ -77,13 +93,23 @@ def create(title: str, notes: str | None, due: str | None):
         else:
             click.echo("Failed to create task.")
     except Exception as e:
+        logging.error(f"Error in create command: {e}", exc_info=True)
         click.echo(f"Error: {e}")
 
 
 @main.command()
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
 @click.option("--completed", "-c", is_flag=True, help="Show completed tasks")
-def list(completed: bool):
+def list(verbose: int, completed: bool):
     """List all tasks."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'list' command (show_completed=%s)", completed)
+
     try:
         manager = TasksManager()
         tasks = manager.list_tasks(show_completed=completed)
@@ -98,13 +124,23 @@ def list(completed: bool):
         for i, task in enumerate(tasks, 1):
             click.echo(format_task(task, index=i))
     except Exception as e:
+        logging.error(f"Error in list command: {e}", exc_info=True)
         click.echo(f"Error: {e}")
 
 
 @main.command()
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
 @click.argument("task_reference")
-def complete(task_reference: str):
+def complete(verbose: int, task_reference: str):
     """Mark a task as completed. Use task number (from list) or task ID."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'complete' command with task_reference: %s", task_reference)
+
     try:
         task_id = resolve_task_reference(task_reference)
         if not task_id:
@@ -116,13 +152,23 @@ def complete(task_reference: str):
         else:
             click.echo("Failed to complete task.")
     except Exception as e:
+        logging.error(f"Error in complete command: {e}", exc_info=True)
         click.echo(f"Error: {e}")
 
 
 @main.command()
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
 @click.argument("task_reference")
-def delete(task_reference: str):
+def delete(verbose: int, task_reference: str):
     """Delete a task. Use task number (from list) or task ID."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'delete' command with task_reference: %s", task_reference)
+
     try:
         task_id = resolve_task_reference(task_reference)
         if not task_id:
@@ -134,12 +180,22 @@ def delete(task_reference: str):
         else:
             click.echo("Failed to delete task.")
     except Exception as e:
+        logging.error(f"Error in delete command: {e}", exc_info=True)
         click.echo(f"Error: {e}")
 
 
 @main.command()
-def lists():
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
+def lists(verbose: int):
     """List all task lists."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'lists' command")
+
     try:
         manager = TasksManager()
         task_lists = manager.get_task_lists()
@@ -151,13 +207,23 @@ def lists():
         for task_list in task_lists:
             click.echo(f"• {task_list['title']} (ID: {task_list['id']})")
     except Exception as e:
+        logging.error(f"Error in lists command: {e}", exc_info=True)
         click.echo(f"Error: {e}")
 
 
 @main.command()
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
 @click.option("--force", is_flag=True, help="Force re-authentication")
-def auth(force):
+def auth(verbose: int, force):
     """Authenticate with Google Tasks."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'auth' command (force=%s)", force)
+
     try:
         click.echo("Authenticating with Google...")
         if force:
@@ -167,8 +233,8 @@ def auth(force):
 
         click.echo("✓ Authentication successful!")
         click.echo("You can now use all gtasks commands.")
-
     except Exception as e:
+        logging.error(f"Error in auth command: {e}", exc_info=True)
         click.echo(f"✗ Authentication failed: {e}")
         click.echo("\nTroubleshooting:")
         click.echo("1. Check your internet connection")
@@ -176,8 +242,17 @@ def auth(force):
 
 
 @main.command()
-def logout():
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
+def logout(verbose: int):
     """Clear stored credentials and logout."""
+    # Setup logging before command execution
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with command
+        pass
+
+    # Log command execution
+    logging.info("Running 'logout' command")
+
     clear_credentials()
 
 

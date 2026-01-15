@@ -29,8 +29,8 @@ description: "Task list for Add Application Logging feature"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create test directory structure if not exists: tests/unit/ and tests/integration/
-- [ ] T002 Verify existing project structure: src/gtasks_manager/ with cli.py, config.py, etc.
+- [X] T001 Create test directory structure if not exists: tests/unit/ and tests/integration/
+- [X] T002 Verify existing project structure: src/gtasks_manager/ with cli.py, config.py, etc.
 
 ---
 
@@ -40,13 +40,13 @@ description: "Task list for Add Application Logging feature"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] [US1] Write failing unit test for get_log_dir() function in tests/unit/test_logging_config.py
-- [ ] T004 [P] [US1] Write failing unit test for setup_logging() function in tests/unit/test_logging_config.py
-- [ ] T005 [US1] Create src/gtasks_manager/logging_config.py module with get_log_dir() function for OS-specific log directory paths
-- [ ] T006 [US1] Implement setup_logging() function in src/gtasks_manager/logging_config.py with RotatingFileHandler configuration
-- [ ] T007 [US1] Add logging configuration constants to src/gtasks_manager/logging_config.py (DEFAULT_LOG_FILENAME, MAX_LOG_SIZE_BYTES, BACKUP_FILE_COUNT, LOG_FORMAT, LOG_DATE_FORMAT, VERBOSITY_TO_LOG_LEVEL)
-- [ ] T008 [US1] Add directory creation with error handling in setup_logging() function in src/gtasks_manager/logging_config.py
-- [ ] T009 [US1] Add permission error handling with user-friendly error message in setup_logging() function in src/gtasks_manager/logging_config.py
+- [X] T003 [P] [US1] Write failing unit test for get_log_dir() function in tests/unit/test_logging_config.py
+- [X] T004 [P] [US1] Write failing unit test for setup_logging() function in tests/unit/test_logging_config.py
+- [X] T005 [US1] Create src/gtasks_manager/logging_config.py module with get_log_dir() function for OS-specific log directory paths
+- [X] T006 [US1] Implement setup_logging() function in src/gtasks_manager/logging_config.py with RotatingFileHandler configuration
+- [X] T007 [US1] Add logging configuration constants to src/gtasks_manager/logging_config.py (DEFAULT_LOG_FILENAME, MAX_LOG_SIZE_BYTES, BACKUP_FILE_COUNT, LOG_FORMAT, LOG_DATE_FORMAT, VERBOSITY_TO_LOG_LEVEL)
+- [X] T008 [US1] Add directory creation with error handling in setup_logging() function in src/gtasks_manager/logging_config.py
+- [X] T009 [US1] Add permission error handling with user-friendly error message in setup_logging() function in src/gtasks_manager/logging_config.py
 
 **Checkpoint**: Foundation ready - logging_config.py module complete with all core functionality, user story implementation can now begin
 
@@ -62,25 +62,25 @@ description: "Task list for Add Application Logging feature"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Write failing unit test test_get_log_dir_posix() in tests/unit/test_logging_config.py (verify Linux/macOS path)
-- [ ] T011 [P] [US1] Write failing unit test test_get_log_dir_windows() in tests/unit/test_logging_config.py (verify Windows path with APPDATA)
-- [ ] T012 [P] [US1] Write failing unit test test_setup_logging_creates_directory() in tests/unit/test_logging_config.py (verify directory auto-creation)
-- [ ] T013 [P] [US1] Write failing unit test test_setup_logging_creates_log_file() in tests/unit/test_logging_config.py (verify log file creation)
-- [ ] T014 [P] [US1] Write failing unit test test_setup_logging_timestamp_format() in tests/unit/test_logging_config.py (verify ISO 8601 timestamp format)
-- [ ] T015 [P] [US1] Write failing unit test test_setup_logging_error_stack_trace() in tests/unit/test_logging_config.py (verify stack trace inclusion)
-- [ ] T016 [P] [US1] Write failing unit test test_setup_logging_permission_error() in tests/unit/test_logging_config.py (verify error handling)
-- [ ] T017 [P] [US1] Write failing integration test test_log_file_created_on_command() in tests/integration/test_logging_integration.py (end-to-end log file creation)
+- [X] T010 [P] [US1] Write failing unit test test_get_log_dir_posix() in tests/unit/test_logging_config.py (verify Linux/macOS path)
+- [X] T011 [P] [US1] Write failing unit test test_get_log_dir_windows() in tests/unit/test_logging_config.py (verify Windows path with APPDATA)
+- [X] T012 [P] [US1] Write failing unit test test_setup_logging_creates_directory() in tests/unit/test_logging_config.py (verify directory auto-creation)
+- [X] T013 [P] [US1] Write failing unit test test_setup_logging_creates_log_file() in tests/unit/test_logging_config.py (verify log file creation)
+- [X] T014 [P] [US1] Write failing unit test test_setup_logging_timestamp_format() in tests/unit/test_logging_config.py (verify ISO 8601 timestamp format)
+- [X] T015 [P] [US1] Write failing unit test test_setup_logging_error_stack_trace() in tests/unit/test_logging_config.py (verify stack trace inclusion)
+- [X] T016 [P] [US1] Write failing unit test test_setup_logging_permission_error() in tests/unit/test_logging_config.py (verify error handling)
+- [X] T017 [P] [US1] Write failing integration test test_log_file_created_on_command() in tests/integration/test_logging_integration.py (end-to-end log file creation)
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Implement get_log_dir() in src/gtasks_manager/logging_config.py with sys.platform detection (win32 vs POSIX)
-- [ ] T019 [US1] Implement directory auto-creation with Path.mkdir(parents=True, exist_ok=True) in setup_logging() in src/gtasks_manager/logging_config.py
-- [ ] T020 [US1] Configure log formatter with LOG_FORMAT and LOG_DATE_FORMAT for ISO 8601 timestamps in src/gtasks_manager/logging_config.py
-- [ ] T021 [US1] Configure RotatingFileHandler with MAX_LOG_SIZE_BYTES and BACKUP_FILE_COUNT in src/gtasks_manager/logging_config.py
-- [ ] T022 [US1] Add error handling for PermissionError and OSError in setup_logging() in src/gtasks_manager/logging_config.py
-- [ ] T023 [US1] Add log entry writing with timestamp and level to logging_config.py (via logging.info(), logging.error())
-- [ ] T024 [US1] Add stack trace inclusion for error logging using exc_info=True in src/gtasks_manager/logging_config.py
-- [ ] T025 [US1] Add unit test coverage verification: run pytest tests/unit/test_logging_config.py to ensure all tests pass
+- [X] T018 [US1] Implement get_log_dir() in src/gtasks_manager/logging_config.py with sys.platform detection (win32 vs POSIX)
+- [X] T019 [US1] Implement directory auto-creation with Path.mkdir(parents=True, exist_ok=True) in setup_logging() in src/gtasks_manager/logging_config.py
+- [X] T020 [US1] Configure log formatter with LOG_FORMAT and LOG_DATE_FORMAT for ISO 8601 timestamps in src/gtasks_manager/logging_config.py
+- [X] T021 [US1] Configure RotatingFileHandler with MAX_LOG_SIZE_BYTES and BACKUP_FILE_COUNT in src/gtasks_manager/logging_config.py
+- [X] T022 [US1] Add error handling for PermissionError and OSError in setup_logging() in src/gtasks_manager/logging_config.py
+- [X] T023 [US1] Add log entry writing with timestamp and level to logging_config.py (via logging.info(), logging.error())
+- [X] T024 [US1] Add stack trace inclusion for error logging using exc_info=True in src/gtasks_manager/logging_config.py
+- [X] T025 [US1] Add unit test coverage verification: run pytest tests/unit/test_logging_config.py to ensure all tests pass
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - running any gtasks command creates log file with timestamps
 
@@ -96,21 +96,21 @@ description: "Task list for Add Application Logging feature"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T026 [P] [US2] Write failing unit test test_setup_logging_default_verbosity() in tests/unit/test_logging_config.py (verify WARNING level)
-- [ ] T027 [P] [US2] Write failing unit test test_setup_logging_info_verbosity() in tests/unit/test_logging_config.py (verify INFO level with -v)
-- [ ] T028 [P] [US2] Write failing unit test test_setup_logging_debug_verbosity() in tests/unit/test_logging_config.py (verify DEBUG level with -vv)
-- [ ] T029 [P] [US2] Write failing integration test test_verbosity_flag_filters_logs() in tests/integration/test_logging_integration.py (verify log level filtering)
-- [ ] T030 [P] [US2] Write failing unit test test_log_level_filtering() in tests/unit/test_logging_config.py (verify only appropriate levels logged)
+- [X] T026 [P] [US2] Write failing unit test test_setup_logging_default_verbosity() in tests/unit/test_logging_config.py (verify WARNING level)
+- [X] T027 [P] [US2] Write failing unit test test_setup_logging_info_verbosity() in tests/unit/test_logging_config.py (verify INFO level with -v)
+- [X] T028 [P] [US2] Write failing unit test test_setup_logging_debug_verbosity() in tests/unit/test_logging_config.py (verify DEBUG level with -vv)
+- [X] T029 [P] [US2] Write failing unit test test_verbosity_flag_filters_logs() in tests/integration/test_logging_integration.py (verify log level filtering)
+- [X] T030 [P] [US2] Write failing unit test test_log_level_filtering() in tests/unit/test_logging_config.py (verify only appropriate levels logged)
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2] Verify VERBOSITY_TO_LOG_LEVEL mapping in src/gtasks_manager/logging_config.py (0=WARNING, 1=INFO, 2+=DEBUG)
-- [ ] T032 [US2] Import setup_logging in src/gtasks_manager/cli.py
-- [ ] T033 [US2] Add @click.option('-v', '--verbose', count=True, help='Increase verbosity level (use -v or -vv)') to each CLI command in src/gtasks_manager/cli.py
-- [ ] T034 [US2] Call setup_logging(verbosity=verbose) at start of each command in src/gtasks_manager/cli.py
-- [ ] T035 [US2] Handle setup_logging() return value (False on error) in src/gtasks_manager/cli.py
-- [ ] T036 [US2] Add logging statements to existing command implementations in src/gtasks_manager/cli.py (logging.info() for command start, logging.error() with exc_info=True for errors)
-- [ ] T037 [US2] Add unit test coverage verification: run pytest tests/unit/test_logging_config.py to ensure all US2 tests pass
+- [X] T031 [US2] Verify VERBOSITY_TO_LOG_LEVEL mapping in src/gtasks_manager/logging_config.py (0=WARNING, 1=INFO, 2+=DEBUG)
+- [X] T032 [US2] Import setup_logging and get_log_dir in src/gtasks_manager/cli.py
+- [X] T033 [US2] Add @click.option('-v', '--verbose', count=True, help='Increase verbosity level (use -v or -vv)') to all CLI commands in src/gtasks_manager/cli.py (create, list, complete, delete, lists, auth, logout)
+- [X] T034 [US2] Call setup_logging(verbosity) at start of each command in src/gtasks_manager/cli.py
+- [X] T035 [US2] Handle setup_logging() return value (False on error) in src/gtasks_manager/cli.py
+- [X] T036 [US2] Add logging statements to existing command implementations in src/gtasks_manager/cli.py (logging.info() for command start, logging.error() with exc_info=True for errors)
+- [X] T037 [US2] Add unit test coverage verification: run pytest tests/unit/test_logging_config.py to ensure all US2 tests pass
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - logging with configurable verbosity
 
@@ -145,14 +145,14 @@ description: "Task list for Add Application Logging feature"
 
 **Purpose**: Validate cross-cutting concerns and edge cases
 
-- [ ] T045 [P] Write failing integration test test_log_file_rotation() in tests/integration/test_logging_integration.py (verify 10MB rotation triggers)
-- [ ] T046 [P] Write failing integration test test_concurrent_writes_no_corruption() in tests/integration/test_logging_integration.py (verify multiple processes write safely)
-- [ ] T047 [P] Write failing integration test test_log_file_exists_after_crash() in tests/integration/test_logging_integration.py (verify log integrity)
-- [ ] T048 [P] Write failing integration test test_large_log_handling() in tests/integration/test_logging_integration.py (verify no performance degradation)
-- [ ] T049 Implement log rotation test in tests/integration/test_logging_integration.py (write >10MB, verify backup files created)
-- [ ] T050 Implement concurrent writes test in tests/integration/test_logging_integration.py (spawn 5 processes, verify no corruption)
-- [ ] T051 Implement crash recovery test in tests/integration/test_logging_integration.py (simulate crash, verify log intact)
-- [ ] T052 Verify all integration tests pass: run pytest tests/integration/test_logging_integration.py
+- [X] T045 [P] Write failing integration test test_log_file_rotation() in tests/integration/test_logging_integration.py (verify 10MB rotation triggers)
+- [X] T046 [P] Write failing integration test test_concurrent_writes_no_corruption() in tests/integration/test_logging_integration.py (verify multiple processes write safely)
+- [X] T047 [P] Write failing integration test test_log_file_exists_after_crash() in tests/integration/test_logging_integration.py (verify log integrity)
+- [X] T048 [P] Write failing integration test test_large_log_handling() in tests/integration/test_logging_integration.py (verify no performance degradation)
+- [X] T049 Implement log rotation test in tests/integration/test_logging_integration.py (write >10MB, verify backup files created)
+- [X] T050 Implement concurrent writes test in tests/integration/test_logging_integration.py (spawn 5 processes, verify no corruption)
+- [X] T051 Implement crash recovery test in tests/integration/test_logging_integration.py (simulate crash, verify log intact)
+- [X] T052 Verify all integration tests pass: run pytest tests/integration/test_logging_integration.py
 
 ---
 
