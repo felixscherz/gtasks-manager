@@ -7,6 +7,7 @@ from gtasks_manager.cli.commands.tasks import complete, create, delete, list_tas
 from gtasks_manager.config import CONFIG_DIR
 from gtasks_manager.core.services import TaskService
 from gtasks_manager.core.task_cache import TaskCache
+from gtasks_manager.logging_config import setup_logging
 
 # Dependency Injection / Bootstrap
 _adapter = GoogleTasksAdapter()
@@ -29,11 +30,19 @@ def process_result(result, **kwargs):
 
 
 @click.command()
-@click.pass_obj
-def gui(service):
-    """Launch the TUI."""
+@click.option("-v", "--verbose", count=True, help="Increase verbosity level (use -v or -vv)")
+@click.pass_context
+def gui(ctx, verbose):
+    """Launch TUI."""
+    # Setup logging before launching TUI
+    if not setup_logging(verbosity=verbose):
+        # Logging setup failed, but continue with TUI
+        pass
+
     from gtasks_manager.tui.app import TasksApp
 
+    # Get service from context (passed by cli group)
+    service = ctx.obj
     app = TasksApp(service)
     app.run()
 

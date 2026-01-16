@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 
 HOME_DIR = Path.home()
@@ -24,3 +26,25 @@ CLIENT_CONFIG = {
 
 def ensure_config_dir():
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# Log file configuration
+DEFAULT_LOG_FILENAME = "gtasks.log"
+
+
+def get_log_dir() -> Path:
+    """Get the OS-specific log directory."""
+    if sys.platform == "win32":
+        base_dir = Path(os.environ.get("APPDATA", Path.home() / "AppData/Roaming"))
+    else:
+        base_dir = Path.home() / ".config"
+
+    log_dir = base_dir / "gtasks-manager" / "logs"
+    return log_dir
+
+
+def get_log_file_path() -> str:
+    """Get the log file path for display in help text."""
+    log_dir = get_log_dir()
+    log_file = log_dir / DEFAULT_LOG_FILENAME
+    return str(log_file)

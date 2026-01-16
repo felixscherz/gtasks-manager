@@ -59,6 +59,9 @@ class TaskCache:
         """Save cache to a file."""
         import json
 
+        # Ensure parent directory exists
+        path.parent.mkdir(parents=True, exist_ok=True)
+
         data = {
             "active_tasks": self.active_tasks,
             "completed_tasks": self.completed_tasks,
