@@ -117,8 +117,10 @@ class TasksApp(App):
                 break
 
         if found_index is not None:
+            # Directly set the list view index and update UI focus
             list_view = self.query_one("#task-list-view", ListView)
             list_view.index = found_index
+            self.ui_focus = UIFocus(pane=UIFocusPane.TASK_LIST, index=found_index)
             self.selected_task_id = preserved_id
         else:
             self.selected_task_id = None
@@ -277,7 +279,8 @@ class TasksApp(App):
 
         self.tasks = updated_tasks
         self._persist_toggle(task.id, old_status)
-        self.restore_selection()
+        # Restore selection after UI has updated
+        self.call_after_refresh(self.restore_selection)
 
     @work
     async def _persist_toggle(self, task_id: str, old_status: TaskStatus) -> None:
@@ -296,7 +299,8 @@ class TasksApp(App):
         task = next((t for t in self.tasks if t.id == task_id), None)
         if task:
             task.status = old_status
-        self.restore_selection()
+        # Restore selection after UI has updated
+        self.call_after_refresh(self.restore_selection)
 
 
 def launch_tui() -> None:
