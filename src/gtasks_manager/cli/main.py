@@ -15,12 +15,29 @@ _cache = TaskCache.load(CONFIG_DIR / "task_cache.json")
 _service = TaskService(_adapter, _cache)
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.version_option()
 @click.pass_context
 def cli(ctx):
-    """Google Tasks Manager CLI."""
+    """Google Tasks Manager CLI.
+
+    Run without arguments to launch TUI, or use a subcommand.
+    """
     ctx.obj = _service
+
+    if ctx.invoked_subcommand is None:
+        launch_tui()
+
+
+def launch_tui() -> None:
+    """Launch TUI application.
+
+    This function imports from tui.app to avoid circular import issues.
+    """
+    from gtasks_manager.tui.app import TasksApp
+
+    app = TasksApp(_service)
+    app.run()
 
 
 @cli.result_callback()
@@ -39,12 +56,7 @@ def gui(ctx, verbose):
         # Logging setup failed, but continue with TUI
         pass
 
-    from gtasks_manager.tui.app import TasksApp
-
-    # Get service from context (passed by cli group)
-    service = ctx.obj
-    app = TasksApp(service)
-    app.run()
+    launch_tui()
 
 
 cli.add_command(auth)

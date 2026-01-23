@@ -27,13 +27,13 @@ description: "Task breakdown for improving TUI UX"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create TUI subpackage structure in src/gtasks_manager/tui/ with __init__.py
-- [ ] T002 [P] Create TUI application file in src/gtasks_manager/tui/app.py
-- [ ] T003 [P] Create TUI widgets file in src/gtasks_manager/tui/widgets.py
-- [ ] T004 [P] Create TUI state management file in src/gtasks_manager/tui/state.py
-- [ ] T005 [P] Create unit test file for TUI components in tests/unit/test_tui.py
-- [ ] T006 [P] Create unit test file for TUI state management in tests/unit/test_state.py
-- [ ] T007 [P] Create integration test file for TUI workflows in tests/integration/test_tui_flow.py
+- [X] T001 Create TUI subpackage structure in src/gtasks_manager/tui/ with __init__.py
+- [X] T002 [P] Create TUI application file in src/gtasks_manager/tui/app.py
+- [X] T003 [P] Create TUI widgets file in src/gtasks_manager/tui/widgets.py
+- [X] T004 [P] Create TUI state management file in src/gtasks_manager/tui/state.py
+- [X] T005 [P] Create unit test file for TUI components in tests/unit/test_tui.py
+- [X] T006 [P] Create unit test file for TUI state management in tests/unit/test_state.py
+- [X] T007 [P] Create integration test file for TUI workflows in tests/integration/test_tui_flow.py
 
 ---
 
@@ -43,14 +43,14 @@ description: "Task breakdown for improving TUI UX"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T008 Implement TUI application class in src/gtasks_manager/tui/app.py with Textual App setup
-- [ ] T009 [P] Implement TUIApplicationState dataclass in src/gtasks_manager/tui/state.py with selection, list metadata, loading, and error fields
-- [ ] T010 [P] Implement TUISelectionState dataclass in src/gtasks_manager/tui/state.py with task_id, preserved flag, and timestamp
-- [ ] T011 [P] Implement TaskListMetadata dataclass in src/gtasks_manager/tui/state.py with list_id, name, fetched_at, and is_cached fields
-- [ ] T012 Implement TUI application launch() method in src/gtasks_manager/tui/app.py that initializes TUI and blocks until closed
-- [ ] T013 [P] Implement base TaskListWidget in src/gtasks_manager/tui/widgets.py with compose() method for task list display
-- [ ] T014 [P] Implement base header layout in src/gtasks_manager/tui/widgets.py for TUI header area
-- [ ] T015 Add Textual imports and basic app configuration in src/gtasks_manager/tui/app.py
+- [X] T008 Implement TUI application class in src/gtasks_manager/tui/app.py with Textual App setup
+- [X] T009 [P] Implement TUIApplicationState dataclass in src/gtasks_manager/tui/state.py with selection, list metadata, loading, and error fields
+- [X] T010 [P] Implement TUISelectionState dataclass in src/gtasks_manager/tui/state.py with task_id, preserved flag, and timestamp
+- [X] T011 [P] Implement TaskListMetadata dataclass in src/gtasks_manager/tui/state.py with list_id, name, fetched_at, and is_cached fields
+- [X] T012 Implement TUI application launch() method in src/gtasks_manager/tui/app.py that initializes TUI and blocks until closed
+- [X] T013 [P] Implement base TaskListWidget in src/gtasks_manager/tui/widgets.py with compose() method for task list display
+- [X] T014 [P] Implement base header layout in src/gtasks_manager/tui/widgets.py for TUI header area
+- [X] T015 Add Textual imports and basic app configuration in src/gtasks_manager/tui/app.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -66,18 +66,18 @@ description: "Task breakdown for improving TUI UX"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T016 [P] [US1] Write failing unit test test_cli_launches_tui_when_no_subcommand in tests/unit/test_cli.py
-- [ ] T017 [P] [US1] Write failing unit test test_gui_command_launches_tui in tests/unit/test_cli.py
-- [ ] T018 [P] [US1] Write failing integration test test_gtasks_without_args_launches_tui in tests/integration/test_tui_flow.py
-- [ ] T019 [P] [US1] Write failing integration test test_invalid_args_show_help_not_tui in tests/integration/test_tui_flow.py
+- [X] T016 [P] [US1] Write failing unit test test_cli_launches_tui_when_no_subcommand in tests/unit/test_cli.py
+- [X] T017 [P] [US1] Write failing unit test test_gui_command_launches_tui in tests/unit/test_cli.py
+- [X] T018 [P] [US1] Write failing integration test test_gtasks_without_args_launches_tui in tests/integration/test_tui_flow.py
+- [X] T019 [P] [US1] Write failing integration test test_invalid_args_show_help_not_tui in tests/integration/test_tui_flow.py
 
 ### Implementation for User Story 1
 
-- [ ] T020 [P] [US1] Modify src/gtasks_manager/cli.py to add invoke_without_command=True to main group decorator
-- [ ] T021 [P] [US1] Implement main group logic in src/gtasks_manager/cli.py to detect ctx.invoked_subcommand is None and call launch_tui()
-- [ ] T022 [US1] Import launch_tui function from .tui.app in src/gtasks_manager/cli.py
-- [ ] T023 [US1] Update docstring of main group in src/gtasks_manager/cli.py to document default TUI behavior
-- [ ] T024 [US1] Verify existing gui command in src/gtasks_manager/cli.py continues to work identically
+- [X] T020 [P] [US1] Modify src/gtasks_manager/cli.py to add invoke_without_command=True to main group decorator
+- [X] T021 [P] [US1] Implement main group logic in src/gtasks_manager/cli.py to detect ctx.invoked_subcommand is None and call launch_tui()
+- [X] T022 [US1] Import launch_tui function from .tui.app in src/gtasks_manager/cli.py
+- [X] T023 [US1] Update docstring of main group in src/gtasks_manager/cli.py to document default TUI behavior
+- [X] T024 [US1] Verify existing gui command in src/gtasks_manager/cli.py continues to work identically
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -123,24 +123,24 @@ description: "Task breakdown for improving TUI UX"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T037 [P] [US3] Write failing unit test test_set_selection_highlights_task in tests/unit/test_tui.py
-- [ ] T038 [P] [US3] Write failing unit test test_preserve_selection_stores_task_id in tests/unit/test_tui.py
-- [ ] T039 [P] [US3] Write failing unit test test_restore_selection_moves_highlight_to_correct_index in tests/unit/test_tui.py
-- [ ] T040 [P] [US3] Write failing unit test test_selection_state_transitions in tests/unit/test_state.py
-- [ ] T041 [P] [US3] Write failing integration test test_task_toggle_preserves_selection_across_refresh in tests/integration/test_tui_flow.py
-- [ ] T042 [P] [US3] Write failing integration test test_selection_restoration_handles_moved_task_in_sorted_list in tests/integration/test_tui_flow.py
+- [X] T037 [P] [US3] Write failing unit test test_set_selection_highlights_task in tests/unit/test_tui.py
+- [X] T038 [P] [US3] Write failing unit test test_preserve_selection_stores_task_id in tests/unit/test_tui.py
+- [X] T039 [P] [US3] Write failing unit test test_restore_selection_moves_highlight_to_correct_index in tests/unit/test_tui.py
+- [X] T040 [P] [US3] Write failing unit test test_selection_state_transitions in tests/unit/test_state.py
+- [X] T041 [P] [US3] Write failing integration test test_task_toggle_preserves_selection_across_refresh in tests/integration/test_tui_flow.py
+- [X] T042 [P] [US3] Write failing integration test test_selection_restoration_handles_moved_task_in_sorted_list in tests/integration/test_tui_flow.py
 
 ### Implementation for User Story 3
 
-- [ ] T043 [P] [US3] Implement selected_task_id reactive attribute in src/gtasks_manager/tui/widgets.py for TaskListWidget
-- [ ] T044 [P] [US3] Implement watch_selected_task_id method in src/gtasks_manager/tui/widgets.py to highlight task by ID
-- [ ] T045 [P] [US3] Implement preserve_selection() method in src/gtasks_manager/tui/app.py that stores current task_id in selection state
-- [ ] T046 [P] [US3] Implement restore_selection() method in src/gtasks_manager/tui/app.py that finds task by ID and moves highlight
-- [ ] T047 [US3] Modify TaskListWidget in src/gtasks_manager/tui/widgets.py to emit TaskSelected event when task is selected
-- [ ] T048 [US3] Modify TaskListWidget in src/gtasks_manager/tui/widgets.py to emit TaskToggled event when task state is toggled
-- [ ] T049 [US3] Implement TaskToggled event handler in src/gtasks_manager/tui/app.py that preserves selection, calls API, refreshes list, and restores selection
-- [ ] T050 [US3] Add toggle_task_state async method in src/gtasks_manager/tui/app.py with @work decorator for background API call
-- [ ] T051 [US3] Add error handling in src/gtasks_manager/tui/app.py for selection restoration when task ID not found
+- [X] T043 [P] [US3] Implement selected_task_id reactive attribute in src/gtasks_manager/tui/widgets.py for TaskListWidget
+- [X] T044 [P] [US3] Implement watch_selected_task_id method in src/gtasks_manager/tui/widgets.py to highlight task by ID
+- [X] T045 [P] [US3] Implement preserve_selection() method in src/gtasks_manager/tui/app.py that stores current task_id in selection state
+- [X] T046 [P] [US3] Implement restore_selection() method in src/gtasks_manager/tui/app.py that finds task by ID and moves highlight
+- [X] T047 [US3] Modify TaskListWidget in src/gtasks_manager/tui/widgets.py to emit TaskSelected event when task is selected
+- [X] T048 [US3] Modify TaskListWidget in src/gtasks_manager/tui/widgets.py to emit TaskToggled event when task state is toggled
+- [X] T049 [US3] Implement TaskToggled event handler in src/gtasks_manager/tui/app.py that preserves selection, calls API, refreshes list, and restores selection
+- [X] T050 [US3] Add toggle_task_state async method in src/gtasks_manager/tui/app.py with @work decorator for background API call
+- [X] T051 [US3] Add error handling in src/gtasks_manager/tui/app.py for selection restoration when task ID not found
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently
 

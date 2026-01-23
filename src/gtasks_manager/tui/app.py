@@ -45,6 +45,7 @@ class TasksApp(App):
         self.service = service
         self.keybinding_manager = KeyBindingManager()
         self.selected_task_id: str | None = None
+        self._preserved_task_id: str | None = None
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -96,6 +97,33 @@ class TasksApp(App):
                 self.selected_task_id = None
             if old_focus != new_focus:
                 self._update_selected_task()
+
+    def preserve_selection(self) -> None:
+        """Store current task ID for preservation across state changes."""
+        if self.selected_task_id:
+            self._preserved_task_id = self.selected_task_id
+
+    def restore_selection(self) -> None:
+        """Restore selection to preserved task by finding its new position."""
+        if not self._preserved_task_id:
+            return
+
+        preserved_id = self._preserved_task_id
+        found_index = None
+
+        for index, task in enumerate(self.tasks):
+            if task.id == preserved_id:
+                found_index = index
+                break
+
+        if found_index is not None:
+            list_view = self.query_one("#task-list-view", ListView)
+            list_view.index = found_index
+            self.selected_task_id = preserved_id
+        else:
+            self.selected_task_id = None
+
+        self._preserved_task_id = None
 
     def watch_loading_state(self, loading: bool) -> None:
         """Called when loading state changes."""
@@ -209,6 +237,8 @@ class TasksApp(App):
         if not task:
             return
 
+        self.preserve_selection()
+
         old_status = task.status
         new_status = (
             TaskStatus.COMPLETED
@@ -247,6 +277,7 @@ class TasksApp(App):
 
         self.tasks = updated_tasks
         self._persist_toggle(task.id, old_status)
+        self.restore_selection()
 
     @work
     async def _persist_toggle(self, task_id: str, old_status: TaskStatus) -> None:
@@ -265,10 +296,15 @@ class TasksApp(App):
         task = next((t for t in self.tasks if t.id == task_id), None)
         if task:
             task.status = old_status
+        self.restore_selection()
 
 
-if __name__ == "__main__":
-    # For testing purposes only
+def launch_tui() -> None:
+    """Launch the TUI application.
+
+    This function initializes the TUI with a GoogleTasks adapter and
+    blocks until the TUI is closed by the user.
+    """
     from gtasks_manager.adapters.google_tasks import GoogleTasksAdapter
     from gtasks_manager.config import CONFIG_DIR
     from gtasks_manager.core.task_cache import TaskCache
@@ -278,3 +314,7 @@ if __name__ == "__main__":
     service = TaskService(adapter, cache)
     app = TasksApp(service)
     app.run()
+
+
+if __name__ == "__main__":
+    launch_tui()
