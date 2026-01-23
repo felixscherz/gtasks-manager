@@ -453,6 +453,8 @@ mkdir -p specs/005-my-feature
 - Google Tasks API (external), task_cache.py (local JSON caching) (003-vim-keybindings)
 - Python 3.11+ + Python logging module (stdlib), Click 8.0+ (existing CLI framework) (004-add-logging)
 - File system (log files) (004-add-logging)
+- Python 3.11+ + Click 8.0+, Textual 0.47+, Google API Python Client 2.0+ (005-improve-tui-ux)
+- Google Tasks API (external), local JSON cache for task metadata (005-improve-tui-ux)
 
 ## Recent Changes
 - 001-google-tasks-cli-tui: Added Python 3.11+
