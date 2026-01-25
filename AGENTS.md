@@ -381,6 +381,7 @@ This project uses **spec-kit** (GitHub Spec Kit) for spec-driven development. Al
 
 1. **Initialize Feature Spec**
    - Create new spec directory: `specs/###-feature-name/`
+   - Make sure you use the correct spec number by incrementing the latest number in the ./specs directory
    - Start with user stories in `spec.md` prioritized as independent, testable journeys
    - Each user story must deliver standalone value (MVP-first approach)
 
